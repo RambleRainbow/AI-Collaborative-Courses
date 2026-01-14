@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识本体与应用 - 动画分镜控制台</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e1e; color: #f0f0f0; padding: 20px; }
+        h1 { color: #61dafb; border-bottom: 2px solid #61dafb; padding-bottom: 10px; }
+        h2 { color: #ffd700; margin-top: 30px; }
+        .scene-card { background-color: #2d2d2d; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid #61dafb; display: flex; align-items: center; justify-content: space-between; }
+        .scene-info { flex: 1; }
+        .scene-title { font-weight: bold; font-size: 1.1em; }
+        .scene-desc { color: #aaa; font-size: 0.9em; margin-top: 5px; }
+        .status-badge { background-color: #4caf50; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+        .status-pending { background-color: #ff9800; }
+        .cmd-box { background-color: #000; padding: 10px; border-radius: 4px; font-family: monospace; color: #0f0; margin-top: 5px; font-size: 0.9em; user-select: all; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>知识本体与应用 - 动画分镜列表</h1>
+    <p>点击命令框复制渲染命令。</p>
+
+    <!-- Act 1 -->
+    <h2>第一幕：从语言符号到概念网络</h2>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景1: 语言符号的呈现 <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">如果天下雨，那么地会湿 (文字展示)</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene1.py Act1Scene1</div>
+        </div>
+    </div>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景2: 命题拆解 <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">分裂为前件和后件</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene2.py Act1Scene2</div>
+        </div>
+    </div>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景3: 概念拆解(左) <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">天空-(发生)->下雨</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene3.py Act1Scene3</div>
+        </div>
+    </div>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景4: 概念拆解(右) <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">地面-(具有状态)->湿</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene4.py Act1Scene4</div>
+        </div>
+    </div>
+     <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景5: 完整网络 <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">概念网络的重组与连接</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene5.py Act1Scene5</div>
+        </div>
+    </div>
+
+    <!-- Act 2 -->
+    <h2>第二幕：从静态知识到动态系统</h2>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景1-6: 静态限制与动态系统 <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">静态快照 vs 动态水循环</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act2/scene1.py Act2Scene1</div>
+        </div>
+        <!-- 仅列出部分代表性命令，实际可以列出所有 -->
+    </div>
+
+    <!-- Act 3 -->
+    <h2>第三幕：从静态概念到动态机制</h2>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">场景1-5: 单元识别与降噪 <span class="status-badge">已实现</span></div>
+            <div class="scene-desc">A->B vs A-B-C-D 循环</div>
+            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act3/scene3.py Act3Scene3</div>
+        </div>
+    </div>
+
+    <!-- Future Acts -->
+    <h2>第四幕 - 第六幕</h2>
+    <div class="scene-card">
+        <div class="scene-info">
+            <div class="scene-title">待实现场景 <span class="status-badge status-pending">待办</span></div>
+            <div class="scene-desc">已生成代码框架 (src/act4, src/act5, src/act6)</div>
+        </div>
+    </div>
+
+    <script>
+        function copy(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("命令已复制: " + text);
+            });
+        }
+    </script>
+</body>
+</html>

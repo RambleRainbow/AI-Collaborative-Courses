@@ -6,3 +6,23 @@
 
 */**/*.drawio.bkp
 *.drawio.bkp
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+.venv/
+.env
+
+# --- Manim ---
+media/
+videos/
+images/
+partial_movie_files/
+Tex/
+__manim_cache__/
+
+# --- uv ---
+.venv/
