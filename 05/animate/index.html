@@ -5,15 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>动画分镜管理平台</title>
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
     <style>
         :root {
             --bg-color: #1e1e1e;
-            --sidebar-width: 350px;
+            --sidebar-width: 300px;
+            --header-height: 50px;
             --primary-color: #61dafb;
-            --text-color: #f0f0f0;
+            --text-color: #d4d4d4;
             --border-color: #333;
-            --card-bg: #2d2d2d;
-            --highlight-bg: #3a3a3a;
+            --card-bg: #252526;
+            --editor-bg: #1e1e1e;
         }
 
         body {
@@ -27,245 +35,437 @@
             overflow: hidden;
         }
 
-        /* 布局 */
+        /* Layout */
+        .wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: all 0.3s;
+        }
+
+        /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
             border-right: 1px solid var(--border-color);
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
+            background: #252526;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+            overflow: hidden;
+            /* Important for clean collapse */
         }
 
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            overflow-y: auto;
+        .sidebar.collapsed {
+            width: 0;
+            border: none;
         }
 
-        /* 侧边栏列表 */
         .sidebar-header {
-            padding: 20px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            /* Reduced padding to fit button */
             border-bottom: 1px solid var(--border-color);
+            background: #333;
+            white-space: nowrap;
+        }
+
+        .sidebar-title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title {
             font-weight: bold;
-            font-size: 1.2em;
             color: var(--primary-color);
         }
 
+        /* Toggle button inside sidebar */
+        .sidebar-toggle-inner {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-toggle-inner:hover {
+            color: #fff;
+        }
+
+        .sidebar-actions button {
+            background: none;
+            border: 1px solid #444;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1.1em;
+            /* Larger size */
+            width: 28px;
+            /* Fixed width/height for square feel */
+            height: 28px;
+            border-radius: 4px;
+            margin-left: 5px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar-actions button:hover {
+            color: #fff;
+            border-color: #666;
+            background: #444;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
         .scene-group {
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-size: 0.85em;
             color: #888;
-            text-transform: uppercase;
-            margin-top: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .scene-group:hover {
+            color: #fff;
         }
 
         .scene-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px 10px 30px;
+            border-bottom: 1px solid #2a2a2a;
             cursor: pointer;
-            transition: background 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 0.9em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .scene-item:hover {
-            background: var(--highlight-bg);
+            background: #2a2d2e;
         }
 
         .scene-item.active {
-            background: #2c3e50;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .scene-title {
-            font-weight: 500;
+            background: #37373d;
+            border-left-color: var(--primary-color);
+            color: #fff;
         }
 
         .scene-meta {
             font-size: 0.8em;
-            color: #aaa;
-            margin-top: 5px;
+            color: #666;
+            margin-top: 2px;
         }
 
-        /* 主内容: 视频区 */
-        .video-container {
-            width: 100%;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            position: relative;
-            min-height: 400px;
+        /* Main Content */
+        .main-content {
+            flex: 1;
             display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Floating Toggle Button (Only visible when collapsed) */
+        .toggle-sidebar-float {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            z-index: 100;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .toggle-sidebar-float:hover {
+            opacity: 1;
+        }
+
+        .toggle-sidebar-float.visible {
+            display: block;
+        }
+
+        /* Section Headers */
+        .section-header {
+            background: #2d2d2d;
+            padding: 8px 15px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #ccc;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-header:hover {
+            background: #383838;
+        }
+
+        /* Video Section */
+        .video-wrapper {
+            background: #000;
+            transition: height 0.3s;
+            overflow: hidden;
+            display: flex;
             justify-content: center;
+            align-items: center;
+        }
+
+        .video-wrapper.collapsed {
+            display: none;
         }
 
         video {
             width: 100%;
-            max-height: 60vh;
+            max-height: 50vh;
             outline: none;
         }
 
         .placeholder {
-            color: #555;
+            color: #666;
+            padding: 40px;
         }
 
-        /* 主内容: 详情区 */
+        /* Details Section */
         .details-container {
+            flex: 1;
             display: flex;
-            gap: 20px;
-            flex: 1;
+            overflow: hidden;
         }
 
-        .desc-box,
-        .code-box {
+        /* Split Panes */
+        .pane {
             flex: 1;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .pane:last-child {
+            border-right: none;
+        }
+
+        .pane-content {
+            flex: 1;
             overflow-y: auto;
-            max-height: 400px;
+            padding: 20px;
+            background: var(--card-bg);
         }
 
-        h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-            font-size: 1em;
+        .pane-title {
+            padding: 10px 15px;
+            background: #252526;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
         }
 
-        /* 代码显示 */
-        pre {
-            white-space: pre-wrap;
-            word-break: break-all;
-            font-family: 'Consolas', monospace;
-            font-size: 0.9em;
+        /* Markdown Styles */
+        .markdown-body {
+            line-height: 1.6;
+            font-size: 0.95em;
             color: #d4d4d4;
+        }
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            border-bottom: 1px solid #444;
+            padding-bottom: 0.3em;
+            color: #fff;
+            margin-top: 1em;
+        }
+
+        .markdown-body code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+
+        .markdown-body pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid #555;
+            padding-left: 10px;
+            color: #888;
+            margin: 10px 0;
+        }
+
+        /* Code Editor Look */
+        .code-content {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        /* Copy button */
-        .cmd-display {
-            background: #000;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #0f0;
-            margin-bottom: 15px;
-            cursor: pointer;
-            font-size: 0.9em;
+        .hljs {
+            background: var(--editor-bg) !important;
+            padding: 15px !important;
+            height: 100%;
+            box-sizing: border-box;
         }
 
+        /* Scrollbars */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
+            height: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: #444;
-            border-radius: 4px;
+            border-radius: 5px;
+            border: 2px solid var(--bg-color);
         }
 
         ::-webkit-scrollbar-track {
-            background: #222;
+            background: var(--bg-color);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- 左侧列表 -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div>🎬 动画分镜</div>
-            <div style="margin-top:5px; font-size:0.8em; font-weight:normal;">
-                <button onclick="expandAll()"
-                    style="cursor:pointer; background:none; border:1px solid #555; color:#aaa; padding:2px 6px; border-radius:3px;">全部展开</button>
-                <button onclick="collapseAll()"
-                    style="cursor:pointer; background:none; border:1px solid #555; color:#aaa; padding:2px 6px; border-radius:3px; margin-left:5px;">全部折叠</button>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title-area">
+                    <button class="sidebar-toggle-inner" onclick="toggleSidebar()" title="收起列表 (☰)">☰</button>
+                    <div class="sidebar-title">动画分镜</div>
+                </div>
+                <div class="sidebar-actions">
+                    <button onclick="expandAll()" title="全部展开">＋</button>
+                    <button onclick="collapseAll()" title="全部折叠">－</button>
+                </div>
+            </div>
+            <div class="sidebar-content" id="sidebar-content">
+                <div style="padding: 20px; color: #666;">加载中...</div>
             </div>
         </div>
-        <div id="sidebar-content">
-            <!-- List Items injected by JS -->
-            <div style="padding: 20px; color: #666;">加载中...</div>
-        </div>
-    </div>
 
-    <!-- 右侧详情 -->
-    <div class="main-content" id="main">
-        <!-- 上部：视频 -->
-        <div class="video-container">
-            <div class="placeholder" id="video-placeholder">请在左侧选择分镜</div>
-            <video id="player" controls style="display: none;">
-                <source src="" type="video/mp4">
-                您的浏览器不支持视频播放。
-            </video>
-        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar Toggle Icon (Visible when sidebar is likely needed/collapsed interaction) -->
+            <button id="sidebar-toggle-float" class="toggle-sidebar-float" onclick="toggleSidebar()"
+                title="展开列表">☰</button>
 
-        <!-- 命令栏 -->
-        <div id="cmd-bar" class="cmd-display" onclick="copyCmd()" style="display:none;" title="点击复制命令">
-            Render Command
-        </div>
-
-        <!-- 下部：详情 (描述 + 代码) -->
-        <div class="details-container">
-            <div class="desc-box">
-                <h3>📜 脚本描述</h3>
-                <p id="desc-text" style="line-height: 1.6; color: #ccc;">...</p>
+            <!-- Video Section -->
+            <div class="section-header" onclick="toggleVideoSection()">
+                <span>📺 预览 ([点击折叠/展开])</span>
+                <span id="video-toggle-icon">▼</span>
             </div>
-            <div class="code-box">
-                <h3>💻 对应代码</h3>
-                <pre><code id="code-content">...</code></pre>
+            <div class="video-wrapper" id="video-wrapper">
+                <div class="placeholder" id="video-placeholder">请在左侧选择分镜</div>
+                <video id="player" controls style="display: none;">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+
+            <!-- Details Section (Split View) -->
+            <div class="details-container">
+                <!-- Left Pane: Markdown Description -->
+                <div class="pane">
+                    <div class="pane-title">📝 脚本描述 (Markdown)</div>
+                    <div class="pane-content markdown-body" id="desc-content">
+                        <p style="color:#666">暂无内容</p>
+                    </div>
+                </div>
+
+                <!-- Right Pane: Code Editor -->
+                <div class="pane">
+                    <div class="pane-title">🐍 Python 代码</div>
+                    <div class="pane-content" style="padding:0; overflow: hidden;">
+                        <pre
+                            class="code-content"><code class="language-python" id="code-content"># 代码将显示在这里</code></pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let currentScenes = [];
+        let isSidebarOpen = true;
+        let isVideoOpen = true;
 
-        // 初始化
+        // ... (init remains same) ...
         async function init() {
             try {
                 const res = await fetch('/api/scenes');
-                const scenes = await res.json();
-                currentScenes = scenes;
-                renderSidebar(scenes);
-
-                // 默认选择第一个
-                if (scenes.length > 0) {
-                    selectScene(scenes[0].id);
-                }
+                currentScenes = await res.json();
+                renderSidebar(currentScenes);
+                if (currentScenes.length > 0) selectScene(currentScenes[0].id);
             } catch (e) {
                 console.error(e);
-                document.getElementById('sidebar-content').innerHTML = '<div style="padding:20px; color:red">加载失败，请确保服务器已启动 (python server.py)</div>';
+                document.getElementById('sidebar-content').innerHTML = '<div style="padding:20px; color:red">Failed to load data</div>';
             }
         }
 
-        // 渲染列表
+        // ... (renderSidebar remains same) ...
         function renderSidebar(scenes) {
             const container = document.getElementById('sidebar-content');
             container.innerHTML = '';
-
             let lastGroup = "";
             let groupContainer = null;
 
             scenes.forEach((scene, index) => {
                 if (scene.group !== lastGroup) {
-                    // Start new group
                     lastGroup = scene.group;
                     const groupId = `group-${index}`;
 
-                    const groupHeader = document.createElement('div');
-                    groupHeader.className = 'scene-group';
-                    groupHeader.innerText = `▼ ${scene.group}`; // default expanded icon
-                    groupHeader.style.cursor = 'pointer';
-                    groupHeader.onclick = () => toggleGroup(groupId, groupHeader);
-                    container.appendChild(groupHeader);
+                    const header = document.createElement('div');
+                    header.className = 'scene-group';
+                    header.innerHTML = `<span>▼</span> &nbsp; ${scene.group}`;
+                    header.onclick = function () {
+                        const el = document.getElementById(groupId);
+                        const icon = this.querySelector('span');
+                        if (el.style.display === 'none') {
+                            el.style.display = 'block';
+                            icon.innerText = '▼';
+                        } else {
+                            el.style.display = 'none';
+                            icon.innerText = '▶';
+                        }
+                    };
+                    container.appendChild(header);
 
                     groupContainer = document.createElement('div');
                     groupContainer.id = groupId;
-                    groupContainer.className = 'group-items'; // Helper class
+                    groupContainer.className = 'group-items';
                     container.appendChild(groupContainer);
                 }
 
@@ -274,84 +474,83 @@
                 item.id = `item-${scene.id}`;
                 item.onclick = () => selectScene(scene.id);
                 item.innerHTML = `
-                    <div class="scene-title">${scene.title}</div>
-                    <div class="scene-meta">${scene.scene_class}</div>
-                `;
+                <div class="scene-title">${scene.title}</div>
+                <div class="scene-meta">${scene.scene_class}</div>
+            `;
                 groupContainer.appendChild(item);
             });
         }
 
-        function toggleGroup(groupId, headerEl) {
-            const el = document.getElementById(groupId);
-            if (el.style.display === 'none') {
-                el.style.display = 'block';
-                headerEl.innerText = headerEl.innerText.replace('▶', '▼');
+        // ... (selectScene remains same) ...
+        async function selectScene(id) {
+            document.querySelectorAll('.scene-item').forEach(el => el.classList.remove('active'));
+            const el = document.getElementById(`item-${id}`);
+            if (el) el.classList.add('active');
+
+            const scene = currentScenes.find(s => s.id === id);
+            if (!scene) return;
+
+            const player = document.getElementById('player');
+            // Prevent jarring reload if same video? Simple set for now.
+            player.src = scene.video_path;
+            document.getElementById('video-placeholder').style.display = 'none';
+            player.style.display = 'block';
+
+            document.getElementById('desc-content').innerHTML = marked.parse(scene.desc || "*暂无描述*");
+
+            const codeEl = document.getElementById('code-content');
+            codeEl.innerHTML = "# Loading...";
+            try {
+                const res = await fetch(`/api/code?path=${encodeURIComponent(scene.code_path)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    codeEl.textContent = data.content;
+                    hljs.highlightElement(codeEl);
+                } else {
+                    codeEl.textContent = "# 无法读取文件";
+                }
+            } catch (e) {
+                codeEl.textContent = "# 网络错误";
+            }
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const floatBtn = document.getElementById('sidebar-toggle-float');
+            isSidebarOpen = !isSidebarOpen;
+
+            if (isSidebarOpen) {
+                sb.classList.remove('collapsed');
+                floatBtn.classList.remove('visible');
             } else {
-                el.style.display = 'none';
-                headerEl.innerText = headerEl.innerText.replace('▼', '▶');
+                sb.classList.add('collapsed');
+                floatBtn.classList.add('visible');
+            }
+        }
+
+        // ... (Others remain same) ...
+        function toggleVideoSection() {
+            const vw = document.getElementById('video-wrapper');
+            const icon = document.getElementById('video-toggle-icon');
+            isVideoOpen = !isVideoOpen;
+            if (isVideoOpen) {
+                vw.classList.remove('collapsed');
+                icon.innerText = '▼';
+            } else {
+                vw.classList.add('collapsed');
+                icon.innerText = '▶';
             }
         }
 
         function expandAll() {
             document.querySelectorAll('.group-items').forEach(el => el.style.display = 'block');
-            document.querySelectorAll('.scene-group').forEach(el => el.innerText = el.innerText.replace('▶', '▼'));
+            document.querySelectorAll('.scene-group span').forEach(el => el.innerText = '▼');
         }
 
         function collapseAll() {
             document.querySelectorAll('.group-items').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.scene-group').forEach(el => el.innerText = el.innerText.replace('▼', '▶'));
-        }
-
-        // 选择分镜
-        async function selectScene(id) {
-            // UI Highlight
-            document.querySelectorAll('.scene-item').forEach(el => el.classList.remove('active'));
-            const activeItem = document.getElementById(`item-${id}`);
-            if (activeItem) activeItem.classList.add('active');
-
-            const scene = currentScenes.find(s => s.id === id);
-            if (!scene) return;
-
-            // 1. Update Video
-            const player = document.getElementById('player');
-            const placeholder = document.getElementById('video-placeholder');
-
-            // Check if video file "likely" exists (client side guess or just try loading)
-            // In a real app we might check status, here we just set src
-            player.src = scene.video_path;
-            player.style.display = 'block';
-            placeholder.style.display = 'none';
-            // player.play(); // Auto play optional
-
-            // 2. Update Description
-            document.getElementById('desc-text').innerText = scene.desc;
-
-            // 3. Update Command
-            const cmdDiv = document.getElementById('cmd-bar');
-            cmdDiv.style.display = 'block';
-            cmdDiv.innerText = `uv run manim -pql ${scene.code_path} ${scene.scene_class}`;
-
-            // 4. Fetch Code
-            const codeEl = document.getElementById('code-content');
-            codeEl.innerText = "正在加载代码...";
-            try {
-                const res = await fetch(`/api/code?path=${encodeURIComponent(scene.code_path)}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    codeEl.innerText = data.content;
-                } else {
-                    codeEl.innerText = "无法读取代码文件";
-                }
-            } catch (e) {
-                codeEl.innerText = "请求错误";
-            }
-        }
-
-        function copyCmd() {
-            const text = document.getElementById('cmd-bar').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("命令已复制");
-            });
+            document.querySelectorAll('.scene-group span').forEach(el => el.innerText = '▶');
         }
 
         init();
