@@ -118,10 +118,15 @@ async def websocket_render(websocket: WebSocket, id: str):
         
         await websocket.send_text(f"Executing: {' '.join(cmd)}\n\n")
         
+        # Add PYTHONPATH to include project root so 'from src.utils import *' works
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.getcwd() + os.pathsep + env.get("PYTHONPATH", "")
+
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            env=env
         )
 
         async def read_stream(stream, label):
