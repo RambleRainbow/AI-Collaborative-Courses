@@ -20,6 +20,7 @@ app.add_middleware(
 
 # 1. 静态文件服务
 # Mount media directory for videos
+os.makedirs("media", exist_ok=True) # Ensure directory exists
 app.mount("/media", StaticFiles(directory="media"), name="media")
 # Mount src directory for raw code reading (optional, mostly handled by API)
 # app.mount("/src", StaticFiles(directory="src"), name="src")

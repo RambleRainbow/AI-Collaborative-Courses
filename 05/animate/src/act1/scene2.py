@@ -1,66 +1,72 @@
 from manim import *
 from src.utils import *
+from src.act1.cast import *
 
 class Act1Scene2(BaseScene):
     def construct(self):
-        # 初始状态 (接上个场景)
-        text_str = "如果天下雨，那么地会湿"
-        # 手动构建各部分以便拆分
-        # "如果"(0,1) "天下雨"(2,3,4) "，"(5) "那么"(6,7) "地会湿"(8,9,10)
-        # 这里的索引取决于中文字符。
-        # 更简单的方法是创建三个Text对象
+        # 1. 加载并恢复状态
+        self.cast = get_act1_cast()
+        self.load_state("act1_scene1")
         
-        part1 = create_text("如果", font_size=40).shift(LEFT*3)
-        part_p = create_text("天下雨").next_to(part1, RIGHT)
-        part_comma = create_text("，", font_size=40).next_to(part_p, RIGHT)
-        part2 = create_text("那么", font_size=40).next_to(part_comma, RIGHT)
-        part_q = create_text("地会湿").next_to(part2, RIGHT)
-        
-        full_sentence = VGroup(part1, part_p, part_comma, part2, part_q)
-        full_sentence.move_to(ORIGIN)
-        
-        self.add(full_sentence)
+        # 2. 场景初始化: 添加可见部分
+        # Scene 1 结束时，所有文字都是可见的，所以我们要把它们 add 到场景中
+        # 即使位置已经被 load_state 更新，我们需要把对象本身 add 进去
+        text_parts = [
+            self.cast["text_if"],
+            self.cast["text_p"],
+            self.cast["text_comma"],
+            self.cast["text_then"],
+            self.cast["text_q"]
+        ]
+
+        # self.play(Write(VGroup(*text_parts)), run_time=2)
+        self.add(*text_parts)
         self.wait(1)
         
-        # 动作: 句子开始断裂
-        # 文字分裂成两个发光的片段
+        # 3. 动画逻辑
+        part_p = self.cast["text_p"]
+        part_q = self.cast["text_q"]
         
-        # 隐藏连接词
+        # 动作: 隐藏连接词
         self.play(
-            FadeOut(part1),
-            FadeOut(part_comma),
-            FadeOut(part2),
+            FadeOut(self.cast["text_if"]),
+            FadeOut(self.cast["text_comma"]),
+            FadeOut(self.cast["text_then"]),
             run_time=1
         )
         
         # 移动命题
-        target_p = part_p.generate_target()
-        target_p.move_to(LEFT * 3)
-        
-        target_q = part_q.generate_target()
-        target_q.move_to(RIGHT * 3)
-        
-        # 箭头
-        arrow = Arrow(LEFT, RIGHT, color=GOLD)
-        arrow.next_to(target_p, RIGHT)
-        # 调整箭头长度使其连接两个命题
-        arrow.put_start_and_end_on(target_p.get_right() + RIGHT*0.5, target_q.get_left() - RIGHT*0.5)
-        
-        # 边框
-        box_p = SurroundingRectangle(target_p, color=BLUE, buff=0.2)
-        box_q = SurroundingRectangle(target_q, color=BLUE, buff=0.2)
-        
-        # 标注
-        label_p = Text("前件命题", font=DEFAULT_FONT, font_size=24, color=GREY).next_to(box_p, UP)
-        label_q = Text("后件命题", font=DEFAULT_FONT, font_size=24, color=GREY).next_to(box_q, UP)
-        label_rel = Text("条件关系", font=DEFAULT_FONT, font_size=24, color=GOLD).next_to(arrow, UP)
-        
         self.play(
-            MoveToTarget(part_p),
-            MoveToTarget(part_q),
-            Create(arrow),
+            part_p.animate.move_to(LEFT * 3),
+            part_q.animate.move_to(RIGHT * 3),
             run_time=2
         )
+        
+        # 获取新元素 (已在 get_act1_cast 中定义)
+        arrow = self.cast["arrow"]
+        box_p = self.cast["box_p"]
+        box_q = self.cast["box_q"]
+        label_p = self.cast["label_p"]
+        label_q = self.cast["label_q"]
+        label_rel = self.cast["label_rel"]
+        
+        # 此时 arrow 等的位置是默认的 (在 cast.py 中定义的)
+        # 恰好 cast.py 中的定义就是基于 part_p/q 默认相对位置
+        # 但 part_p/q 上一步刚刚移动了。
+        # Arrow/Boxes 的 .next_to 关系是**定义时**计算的，不会自动跟随。
+        # 所以我们需要**重新定位**这些结构元素以匹配当前 part_p/q 的新位置。
+        
+        arrow.next_to(part_p, RIGHT)
+        arrow.put_start_and_end_on(part_p.get_right() + RIGHT*0.5, part_q.get_left() - RIGHT*0.5)
+        
+        box_p.move_to(part_p)
+        box_q.move_to(part_q)
+        
+        label_p.next_to(box_p, UP)
+        label_q.next_to(box_q, UP)
+        label_rel.next_to(arrow, UP)
+        
+        self.play(Create(arrow), run_time=1)
         
         self.play(
             Create(box_p),
@@ -71,4 +77,7 @@ class Act1Scene2(BaseScene):
             run_time=2
         )
         
-        self.wait(5)
+        self.wait(2)
+        
+        # 4. 保存状态
+        self.save_state("act1_scene2")

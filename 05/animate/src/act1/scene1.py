@@ -1,23 +1,31 @@
 from manim import *
 from src.utils import *
+from src.act1.cast import *
 
 class Act1Scene1(BaseScene):
     def construct(self):
-        # 旁白: "语言是知识的表层形式"
+        # 1. 加载所有角色
+        self.cast = get_act1_cast()
         
-        # 画面中心: 一句完整的话以文字形式出现
-        text_str = "如果天下雨，那么地会湿"
-        text = create_text(text_str)
+        # 组装句子 (方便动画)
+        text = VGroup(
+            self.cast["text_if"],
+            self.cast["text_p"],
+            self.cast["text_comma"],
+            self.cast["text_then"],
+            self.cast["text_q"]
+        )
         
-        # 动画: 文字是平面的、黑色的、静态的 (在黑色背景上显示为白色以便可见，或遵循脚本"黑色"如果背景是白的。
-        # 这里manim默认背景是黑，所以文字用白色。脚本说"黑色"可能是指打印在纸上的感觉，但在视频里通常反色。
-        # 暂时保持白色文字。
-        
+        # 2. 动画
         self.play(Write(text), run_time=2)
         self.wait(2)
         
-        # 特征: 线性排列，像一条"符号链"
-        # 感觉: 封闭的、不可分解的整体
+        # 确保状态为实心文字
+        text.set_fill(opacity=1)
+        text.set_stroke(width=0)
+        text.set_color(WHITE) # 强制设置颜色，防止 Write 动画导致颜色丢失
         
-        # 持续几秒
         self.wait(6)
+        
+        # 3. 保存状态 (保存整组 Cast)
+        self.save_state("act1_scene1")

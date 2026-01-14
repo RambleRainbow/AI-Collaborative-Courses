@@ -1,21 +1,67 @@
 from manim import *
 from src.utils import *
+from src.act1.cast import *
 
 class Act1Scene3(BaseScene):
     def construct(self):
-        # 聚焦: 「天下雨」
-        # 重现上个场景的左半部分
-        p_text = create_text("天下雨").move_to(ORIGIN)
-        box_p = SurroundingRectangle(p_text, color=BLUE, buff=0.2)
+        # 1. 加载并恢复状态
+        self.cast = get_act1_cast()
+        self.load_state("act1_scene2")
         
-        self.add(p_text, box_p)
+        # 2. 场景初始化
+        # 添加 Scene 2 遗留的可见元素
+        self.add(
+            self.cast["text_p"],
+            self.cast["text_q"],
+            self.cast["arrow"],
+            self.cast["box_p"],
+            self.cast["box_q"],
+            self.cast["label_p"],
+            self.cast["label_q"],
+            self.cast["label_rel"]
+        )
         self.wait(1)
+
+        # 3. 动画: 聚焦左侧
+        # 引用便捷变量
+        text_p = self.cast["text_p"]
+        box_p = self.cast["box_p"]
         
-        # 动作: 命题内部开始发光，文字溶解
-        # 浮现两个概念节点
+        self.play(
+            FadeOut(self.cast["text_q"]),
+            FadeOut(self.cast["arrow"]),
+            FadeOut(self.cast["box_q"]),
+            FadeOut(self.cast["label_p"]),
+            FadeOut(self.cast["label_q"]),
+            FadeOut(self.cast["label_rel"]),
+            text_p.animate.move_to(ORIGIN),
+            box_p.animate.move_to(ORIGIN),
+            run_time=2
+        )
         
-        concept_sky = create_concept_node("天空", UP*1.5 + LEFT*0.5)
-        concept_rain = create_concept_node("下雨", DOWN*1.5 + LEFT*0.5) # 原脚本是垂直分布
+        # 4. 引入概念图 (已在 Cast 中定义)
+        concept_sky = self.cast["concept_sky"]
+        concept_rain = self.cast["concept_rain"]
+        line = self.cast["line_left"]
+        line_label = self.cast["line_label_left"]
+        
+        self.play(
+            text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN),
+            FadeOut(box_p),
+            run_time=2
+        )
+        
+        self.play(
+            FadeIn(concept_sky),
+            FadeIn(concept_rain),
+            Create(line),
+            Write(line_label),
+            run_time=2
+        )
+        
+        self.wait(5)
+        
+        self.save_state("act1_scene3")
         # 脚本图示:
         #       ⭕️ 天空
         #        |
@@ -31,7 +77,7 @@ class Act1Scene3(BaseScene):
         
         # 动画
         self.play(
-            p_text.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN), # 变透明并移到底部作为备注
+            text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN), # 变透明并移到底部作为备注
             FadeOut(box_p),
             run_time=2
         )
