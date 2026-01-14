@@ -544,12 +544,14 @@
             loadScenes();
         }
 
-        async function loadScenes() {
+        async function loadScenes(autoSelectFirst = true) {
             try {
                 const res = await fetch('/api/scenes');
                 currentScenes = await res.json();
                 renderSidebar(currentScenes);
-                if (currentScenes.length > 0) selectScene(currentScenes[0].id);
+                if (autoSelectFirst && currentScenes.length > 0 && !activeSceneId) {
+                    selectScene(currentScenes[0].id);
+                }
             } catch (e) {
                 console.error(e);
                 document.getElementById('sidebar-content').innerHTML = '<div style="padding:20px; color:red">Failed to load data</div>';
@@ -667,17 +669,17 @@
             const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
             const ws = new WebSocket(`${wsProto}://${location.host}/ws/render?id=${activeSceneId}`);
 
-            ws.onmessage = function (event) {
+            ws.onmessage = async function (event) {
                 if (event.data === "###DONE###") {
-                    // Refresh video maybe?
-                    const scene = currentScenes.find(s => s.id === activeSceneId);
-                    // Hack to reload video
-                    const player = document.getElementById('player');
-                    const currentSrc = player.src;
-                    player.src = "";
-                    setTimeout(() => { player.src = currentSrc.split('?')[0] + '?t=' + new Date().getTime(); }, 100);
+                    term.innerHTML += "\n<span class='terminal-success'>Done. Reloading video...</span>";
 
-                    term.innerHTML += "\n<span class='terminal-success'>Done. Video reloading...</span>";
+                    // Reload data to discover the newly generated video path
+                    await loadScenes(false);
+
+                    // Refresh the current view (this will pick up the new video_path)
+                    if (activeSceneId) {
+                        selectScene(activeSceneId);
+                    }
                     return;
                 }
                 term.innerHTML += event.data;
