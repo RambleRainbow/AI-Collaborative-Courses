@@ -39,9 +39,9 @@ def get_act1_cast():
     box_p = SurroundingRectangle(part_p, color=BLUE, buff=0.2)
     box_q = SurroundingRectangle(part_q, color=BLUE, buff=0.2)
     
-    label_p = Text("前件命题", font=DEFAULT_FONT, font_size=24, color=GREY).next_to(box_p, UP)
-    label_q = Text("后件命题", font=DEFAULT_FONT, font_size=24, color=GREY).next_to(box_q, UP)
-    label_rel = Text("条件关系", font=DEFAULT_FONT, font_size=24, color=GOLD).next_to(arrow, UP)
+    label_p = Text("前件命题", font=DEFAULT_FONT, font_size=24).set_color(GREY).next_to(box_p, UP)
+    label_q = Text("后件命题", font=DEFAULT_FONT, font_size=24).set_color(GREY).next_to(box_q, UP)
+    label_rel = Text("条件关系", font=DEFAULT_FONT, font_size=24).set_color(GOLD).next_to(arrow, UP)
     
     cast["arrow"] = arrow
     cast["box_p"] = box_p

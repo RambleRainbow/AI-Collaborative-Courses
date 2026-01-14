@@ -1,3 +1,4 @@
+
 from manim import *
 from src.utils import *
 from src.act1.cast import *
@@ -78,6 +79,15 @@ class Act1Scene2(BaseScene):
         )
         
         self.wait(2)
+        
+        # --- 状态修复 (Fix State Artifacts) ---
+        # 1. Arrow: 确保 Tip 可见 (VGroup 默认读取 Line 的 fill=0，会导致 Tip 变透明)
+        arrow.set_fill(opacity=1)
+        
+        # 2. Labels: 确保颜色正确 (修复 Write 动画可能的颜色残留)
+        label_p.set_color(GREY)
+        label_q.set_color(GREY)
+        label_rel.set_color(GOLD)
         
         # 4. 保存状态
         self.save_state("act1_scene2")

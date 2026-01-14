@@ -59,7 +59,9 @@ COLOR_CORRECT = GREEN      # 正确/通过
 
 def create_text(text_content, font_size=48, color=WHITE):
     """创建居中的中文文本对象"""
-    return Text(text_content, font=DEFAULT_FONT, font_size=font_size, color=color)
+    t = Text(text_content, font=DEFAULT_FONT, font_size=font_size)
+    t.set_color(color)
+    return t
 
 def create_title(text_content):
     """创建标题文本"""
