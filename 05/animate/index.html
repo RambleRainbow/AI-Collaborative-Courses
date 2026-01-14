@@ -5,12 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>动画分镜管理平台</title>
-    <!-- External Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+    <!-- EasyMDE (Markdown Editor) -->
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+
+    <!-- CodeMirror (Code Editor) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
 
     <style>
         :root {
@@ -21,7 +25,8 @@
             --text-color: #d4d4d4;
             --border-color: #333;
             --card-bg: #252526;
-            --editor-bg: #1e1e1e;
+            color-scheme: dark;
+            /* Force dark scrollbars in supported browsers */
         }
 
         body {
@@ -35,7 +40,6 @@
             overflow: hidden;
         }
 
-        /* Layout */
         .wrapper {
             display: flex;
             width: 100%;
@@ -43,7 +47,6 @@
             transition: all 0.3s;
         }
 
-        /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
             border-right: 1px solid var(--border-color);
@@ -53,7 +56,6 @@
             transition: width 0.3s ease;
             flex-shrink: 0;
             overflow: hidden;
-            /* Important for clean collapse */
         }
 
         .sidebar.collapsed {
@@ -67,7 +69,6 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 10px;
-            /* Reduced padding to fit button */
             border-bottom: 1px solid var(--border-color);
             background: #333;
             white-space: nowrap;
@@ -84,7 +85,6 @@
             color: var(--primary-color);
         }
 
-        /* Toggle button inside sidebar */
         .sidebar-toggle-inner {
             background: none;
             border: none;
@@ -96,31 +96,19 @@
             align-items: center;
         }
 
-        .sidebar-toggle-inner:hover {
-            color: #fff;
-        }
-
         .sidebar-actions button {
             background: none;
             border: 1px solid #444;
             color: #aaa;
             cursor: pointer;
             font-size: 1.1em;
-            /* Larger size */
             width: 28px;
-            /* Fixed width/height for square feel */
             height: 28px;
             border-radius: 4px;
             margin-left: 5px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .sidebar-actions button:hover {
-            color: #fff;
-            border-color: #666;
-            background: #444;
         }
 
         .sidebar-content {
@@ -139,10 +127,6 @@
             align-items: center;
         }
 
-        .scene-group:hover {
-            color: #fff;
-        }
-
         .scene-item {
             padding: 10px 20px 10px 30px;
             border-bottom: 1px solid #2a2a2a;
@@ -154,23 +138,12 @@
             text-overflow: ellipsis;
         }
 
-        .scene-item:hover {
-            background: #2a2d2e;
-        }
-
         .scene-item.active {
             background: #37373d;
             border-left-color: var(--primary-color);
             color: #fff;
         }
 
-        .scene-meta {
-            font-size: 0.8em;
-            color: #666;
-            margin-top: 2px;
-        }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -179,7 +152,6 @@
             position: relative;
         }
 
-        /* Floating Toggle Button (Only visible when collapsed) */
         .toggle-sidebar-float {
             position: absolute;
             left: 10px;
@@ -191,21 +163,13 @@
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
             display: none;
-            /* Hidden by default */
-        }
-
-        .toggle-sidebar-float:hover {
-            opacity: 1;
         }
 
         .toggle-sidebar-float.visible {
             display: block;
         }
 
-        /* Section Headers */
         .section-header {
             background: #2d2d2d;
             padding: 8px 15px;
@@ -221,11 +185,6 @@
             user-select: none;
         }
 
-        .section-header:hover {
-            background: #383838;
-        }
-
-        /* Video Section */
         .video-wrapper {
             background: #000;
             transition: height 0.3s;
@@ -233,6 +192,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .video-wrapper.collapsed {
@@ -241,23 +201,16 @@
 
         video {
             width: 100%;
-            max-height: 50vh;
+            max-height: 40vh;
             outline: none;
         }
 
-        .placeholder {
-            color: #666;
-            padding: 40px;
-        }
-
-        /* Details Section */
         .details-container {
             flex: 1;
             display: flex;
             overflow: hidden;
         }
 
-        /* Split Panes */
         .pane {
             flex: 1;
             display: flex;
@@ -270,89 +223,212 @@
             border-right: none;
         }
 
-        .pane-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: var(--card-bg);
+        .pane-header {
+            padding: 0 15px;
+            height: 40px;
+            background: #252526;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .pane-title {
-            padding: 10px 15px;
-            background: #252526;
-            border-bottom: 1px solid var(--border-color);
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #888;
+            font-weight: bold;
         }
 
-        /* Markdown Styles */
-        .markdown-body {
-            line-height: 1.6;
-            font-size: 0.95em;
+        .pane-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pane-content {
+            flex: 1;
+            overflow: hidden;
+            background: var(--card-bg);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Button Styles */
+        .btn {
+            border: none;
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #0e639c;
+        }
+
+        .btn-primary:hover {
+            background: #1177bb;
+        }
+
+        .btn-success {
+            background: #388e3c;
+        }
+
+        .btn-success:hover {
+            background: #4caf50;
+        }
+
+        .btn-secondary {
+            background: #3c3c3c;
+            color: #ccc;
+        }
+
+        .btn-secondary:hover {
+            background: #4a4a4a;
+        }
+
+        /* EasyMDE & CodeMirror Customization */
+        .editor-preview {
+            background-color: #252526;
+            color: #ddd;
+        }
+
+        /* Make EasyMDE container fill parent */
+        .EasyMDEContainer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .EasyMDEContainer .CodeMirror {
+            flex: 1;
+            height: auto;
+            min-height: 0;
+            border: none;
+            background: #1e1e1e;
             color: #d4d4d4;
         }
 
-        .markdown-body h1,
-        .markdown-body h2,
-        .markdown-body h3 {
-            border-bottom: 1px solid #444;
-            padding-bottom: 0.3em;
-            color: #fff;
-            margin-top: 1em;
-        }
-
-        .markdown-body code {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: Consolas, monospace;
-        }
-
-        .markdown-body pre code {
-            background: none;
-            padding: 0;
-        }
-
-        .markdown-body blockquote {
-            border-left: 4px solid #555;
-            padding-left: 10px;
-            color: #888;
-            margin: 10px 0;
-        }
-
-        /* Code Editor Look */
-        .code-content {
-            margin: 0;
-            padding: 0;
+        /* Make CodeMirror (Python) fill parent */
+        .CodeMirror {
             height: 100%;
-            font-family: 'Consolas', 'Courier New', monospace;
+            font-family: 'Consolas', monospace;
             font-size: 14px;
-            line-height: 1.5;
+            background: #272822;
+            color: #f8f8f2;
         }
 
-        .hljs {
-            background: var(--editor-bg) !important;
-            padding: 15px !important;
-            height: 100%;
-            box-sizing: border-box;
+        .editor-toolbar {
+            border-color: #444;
+            background: #333;
+            opacity: 1;
+            flex-shrink: 0;
         }
 
-        /* Scrollbars */
+        .editor-toolbar i {
+            color: #ccc;
+        }
+
+        .editor-toolbar i:hover {
+            color: #fff;
+        }
+
+        .editor-statusbar {
+            display: none;
+        }
+
+        /* Scrollbars - Global Override */
         ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
+            background-color: #1e1e1e;
         }
 
         ::-webkit-scrollbar-thumb {
             background: #444;
-            border-radius: 5px;
-            border: 2px solid var(--bg-color);
+            border-radius: 6px;
+            border: 3px solid #1e1e1e;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background-color: #1e1e1e;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            width: 80%;
+            max-width: 900px;
+            height: 70%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #252526;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .terminal {
+            flex: 1;
+            background: #000;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            color: #ccc;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            margin: 0;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .terminal-line {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .terminal-success {
+            color: #4caf50;
+        }
+
+        .terminal-error {
+            color: #f44336;
         }
     </style>
 </head>
@@ -379,13 +455,12 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Sidebar Toggle Icon (Visible when sidebar is likely needed/collapsed interaction) -->
             <button id="sidebar-toggle-float" class="toggle-sidebar-float" onclick="toggleSidebar()"
                 title="展开列表">☰</button>
 
-            <!-- Video Section -->
+            <!-- Video -->
             <div class="section-header" onclick="toggleVideoSection()">
-                <span>📺 预览 ([点击折叠/展开])</span>
+                <span>📺 预览</span>
                 <span id="video-toggle-icon">▼</span>
             </div>
             <div class="video-wrapper" id="video-wrapper">
@@ -395,35 +470,81 @@
                 </video>
             </div>
 
-            <!-- Details Section (Split View) -->
+            <!-- Editors -->
             <div class="details-container">
-                <!-- Left Pane: Markdown Description -->
+                <!-- Markdown Editor -->
                 <div class="pane">
-                    <div class="pane-title">📝 脚本描述 (Markdown)</div>
-                    <div class="pane-content markdown-body" id="desc-content">
-                        <p style="color:#666">暂无内容</p>
+                    <div class="pane-header">
+                        <div class="pane-title">📝 脚本描述 (Markdown)</div>
+                    </div>
+                    <div class="pane-content">
+                        <textarea id="desc-editor"></textarea>
                     </div>
                 </div>
 
-                <!-- Right Pane: Code Editor -->
+                <!-- Code Editor -->
                 <div class="pane">
-                    <div class="pane-title">🐍 Python 代码</div>
-                    <div class="pane-content" style="padding:0; overflow: hidden;">
-                        <pre
-                            class="code-content"><code class="language-python" id="code-content"># 代码将显示在这里</code></pre>
+                    <div class="pane-header">
+                        <div class="pane-title">🐍 Python 代码</div>
+                        <div class="pane-actions">
+                            <button class="btn btn-primary" onclick="saveCurrentScene()">💾 保存</button>
+                            <button class="btn btn-success" onclick="runCurrentScene()">▶ 运行</button>
+                        </div>
+                    </div>
+                    <div class="pane-content">
+                        <textarea id="code-editor"></textarea>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Run Output Modal -->
+    <div class="modal-overlay" id="run-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">运行控制台</div>
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+            </div>
+            <div class="terminal" id="terminal-output">
+                <!-- Output stream here -->
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentScenes = [];
+        let activeSceneId = null;
         let isSidebarOpen = true;
         let isVideoOpen = true;
 
-        // ... (init remains same) ...
+        // Editors
+        let mde = null;
+        let codeMirror = null;
+
         async function init() {
+            // Init EasyMDE
+            mde = new EasyMDE({
+                element: document.getElementById('desc-editor'),
+                spellChecker: false,
+                status: false,
+                minHeight: "100%",
+                theme: "dark" // EasyMDE doesn't have native dark theme easily, but we override css
+            });
+
+            // Init CodeMirror
+            codeMirror = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+                mode: "python",
+                theme: "monokai",
+                lineNumbers: true,
+                indentUnit: 4
+            });
+            codeMirror.setSize("100%", "100%");
+
+            loadScenes();
+        }
+
+        async function loadScenes() {
             try {
                 const res = await fetch('/api/scenes');
                 currentScenes = await res.json();
@@ -435,8 +556,8 @@
             }
         }
 
-        // ... (renderSidebar remains same) ...
         function renderSidebar(scenes) {
+            // ... Same logic as before ...
             const container = document.getElementById('sidebar-content');
             container.innerHTML = '';
             let lastGroup = "";
@@ -446,43 +567,32 @@
                 if (scene.group !== lastGroup) {
                     lastGroup = scene.group;
                     const groupId = `group-${index}`;
-
                     const header = document.createElement('div');
                     header.className = 'scene-group';
                     header.innerHTML = `<span>▼</span> &nbsp; ${scene.group}`;
                     header.onclick = function () {
                         const el = document.getElementById(groupId);
                         const icon = this.querySelector('span');
-                        if (el.style.display === 'none') {
-                            el.style.display = 'block';
-                            icon.innerText = '▼';
-                        } else {
-                            el.style.display = 'none';
-                            icon.innerText = '▶';
-                        }
+                        if (el.style.display === 'none') { el.style.display = 'block'; icon.innerText = '▼'; }
+                        else { el.style.display = 'none'; icon.innerText = '▶'; }
                     };
                     container.appendChild(header);
-
                     groupContainer = document.createElement('div');
                     groupContainer.id = groupId;
                     groupContainer.className = 'group-items';
                     container.appendChild(groupContainer);
                 }
-
                 const item = document.createElement('div');
                 item.className = 'scene-item';
                 item.id = `item-${scene.id}`;
                 item.onclick = () => selectScene(scene.id);
-                item.innerHTML = `
-                <div class="scene-title">${scene.title}</div>
-                <div class="scene-meta">${scene.scene_class}</div>
-            `;
+                item.innerHTML = `<div class="scene-title">${scene.title}</div><div class="scene-meta">${scene.scene_class}</div>`;
                 groupContainer.appendChild(item);
             });
         }
 
-        // ... (selectScene remains same) ...
         async function selectScene(id) {
+            activeSceneId = id;
             document.querySelectorAll('.scene-item').forEach(el => el.classList.remove('active'));
             const el = document.getElementById(`item-${id}`);
             if (el) el.classList.add('active');
@@ -490,36 +600,111 @@
             const scene = currentScenes.find(s => s.id === id);
             if (!scene) return;
 
+            // Video
             const player = document.getElementById('player');
-            // Prevent jarring reload if same video? Simple set for now.
-            player.src = scene.video_path;
-            document.getElementById('video-placeholder').style.display = 'none';
-            player.style.display = 'block';
+            player.src = scene.video_path || "";
+            if (scene.video_path) {
+                document.getElementById('video-placeholder').style.display = 'none';
+                player.style.display = 'block';
+            } else {
+                document.getElementById('video-placeholder').style.display = 'block';
+                player.style.display = 'none';
+            }
 
-            document.getElementById('desc-content').innerHTML = marked.parse(scene.desc || "*暂无描述*");
+            // Description Editor
+            mde.value(scene.desc || "");
 
-            const codeEl = document.getElementById('code-content');
-            codeEl.innerHTML = "# Loading...";
+            // Code Editor
+            codeMirror.setValue("# Loading...");
             try {
                 const res = await fetch(`/api/code?path=${encodeURIComponent(scene.code_path)}`);
                 if (res.ok) {
                     const data = await res.json();
-                    codeEl.textContent = data.content;
-                    hljs.highlightElement(codeEl);
+                    codeMirror.setValue(data.content);
                 } else {
-                    codeEl.textContent = "# 无法读取文件";
+                    codeMirror.setValue("# Failed to load code");
                 }
             } catch (e) {
-                codeEl.textContent = "# 网络错误";
+                codeMirror.setValue("# Network error");
             }
         }
 
-        // Toggle Sidebar
+        async function saveCurrentScene() {
+            if (!activeSceneId) return;
+            const scene = currentScenes.find(s => s.id === activeSceneId);
+
+            const payload = {
+                id: activeSceneId,
+                desc: mde.value(),
+                code_content: codeMirror.getValue()
+            };
+
+            try {
+                const res = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert("保存成功！");
+                    // Update local model
+                    scene.desc = payload.desc;
+                } else {
+                    alert("保存失败: " + await res.text());
+                }
+            } catch (e) {
+                alert("请求错误: " + e);
+            }
+        }
+
+        function runCurrentScene() {
+            if (!activeSceneId) return;
+            const modal = document.getElementById('run-modal');
+            const term = document.getElementById('terminal-output');
+            modal.style.display = 'flex';
+            term.innerHTML = "Connecting to server...\n";
+
+            const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
+            const ws = new WebSocket(`${wsProto}://${location.host}/ws/render?id=${activeSceneId}`);
+
+            ws.onmessage = function (event) {
+                if (event.data === "###DONE###") {
+                    // Refresh video maybe?
+                    const scene = currentScenes.find(s => s.id === activeSceneId);
+                    // Hack to reload video
+                    const player = document.getElementById('player');
+                    const currentSrc = player.src;
+                    player.src = "";
+                    setTimeout(() => { player.src = currentSrc.split('?')[0] + '?t=' + new Date().getTime(); }, 100);
+
+                    term.innerHTML += "\n<span class='terminal-success'>Done. Video reloading...</span>";
+                    return;
+                }
+                term.innerHTML += event.data;
+                term.scrollTop = term.scrollHeight; // Auto scroll
+            };
+
+            ws.onopen = function () {
+                term.innerHTML += "Connected.\nStarting Manim...\n";
+            };
+
+            ws.onclose = function () {
+                term.innerHTML += "\n[Connection Closed]";
+            };
+
+            ws.onerror = function () {
+                term.innerHTML += "\n<span class='terminal-error'>WebSocket Error</span>";
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('run-modal').style.display = 'none';
+        }
+
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const floatBtn = document.getElementById('sidebar-toggle-float');
             isSidebarOpen = !isSidebarOpen;
-
             if (isSidebarOpen) {
                 sb.classList.remove('collapsed');
                 floatBtn.classList.remove('visible');
@@ -529,7 +714,7 @@
             }
         }
 
-        // ... (Others remain same) ...
+        // Toggle Video
         function toggleVideoSection() {
             const vw = document.getElementById('video-wrapper');
             const icon = document.getElementById('video-toggle-icon');
@@ -543,12 +728,12 @@
             }
         }
 
-        function expandAll() {
+        // Expand/Collapse All helpers
+        window.expandAll = function () {
             document.querySelectorAll('.group-items').forEach(el => el.style.display = 'block');
             document.querySelectorAll('.scene-group span').forEach(el => el.innerText = '▼');
         }
-
-        function collapseAll() {
+        window.collapseAll = function () {
             document.querySelectorAll('.group-items').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.scene-group span').forEach(el => el.innerText = '▶');
         }

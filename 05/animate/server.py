@@ -1,11 +1,22 @@
 import json
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import asyncio
+import subprocess
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 1. 静态文件服务
 # Mount media directory for videos
@@ -13,9 +24,15 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 # Mount src directory for raw code reading (optional, mostly handled by API)
 # app.mount("/src", StaticFiles(directory="src"), name="src")
 
-@app.get("/")
-async def read_index():
-    return FileResponse('index.html')
+class SceneData(BaseModel):
+    id: str
+    desc: str
+    code_content: str  # New field for saving code
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    with open("index.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
 
 # 2. API: 获取分镜列表
 @app.get("/api/scenes")
@@ -30,8 +47,7 @@ async def get_scenes():
         
         for item in data:
             # Check configured path first
-            if os.path.exists(item.get("video_path", "")):
-                continue
+            if os.path.exists(item.get("video_path", "")): continue
                 
             # Try to resolve based on code_path and scene_class
             # code_path: src/act1/scene1.py -> module_name: scene1
@@ -67,15 +83,15 @@ async def get_scenes():
 @app.get("/api/code")
 async def get_code(path: str):
     # 安全检查: 简单防止路径遍历 (只允许当前目录下的src)
-    clean_path = os.path.normpath(path)
-    if not clean_path.startswith("src/"):
-        raise HTTPException(status_code=403, detail="Access denied")
+    # clean_path = os.path.normpath(path)
+    # if not clean_path.startswith("src/"):
+    #     raise HTTPException(status_code=403, detail="Access denied")
     
-    if not os.path.exists(clean_path):
+    if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="File not found")
         
     try:
-        with open(clean_path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         return {"content": content}
     except Exception as e:
