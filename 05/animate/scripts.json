@@ -1,0 +1,155 @@
+[
+    {
+        "id": "act1_scene1",
+        "group": "第一幕：从语言符号到概念网络",
+        "title": "场景1: 语言符号的呈现",
+        "desc": "一句完整的话以文字形式出现，展示语言作为知识表层形式的线性、封闭特征。",
+        "code_path": "src/act1/scene1.py",
+        "scene_class": "Act1Scene1",
+        "video_path": "media/videos/scene1/1080p60/Act1Scene1.mp4"
+    },
+    {
+        "id": "act1_scene2",
+        "group": "第一幕：从语言符号到概念网络",
+        "title": "场景2: 命题拆解",
+        "desc": "文字分裂成两个发光的片段（前件和后件），中间出现连接箭头，展示条件关系。",
+        "code_path": "src/act1/scene2.py",
+        "scene_class": "Act1Scene2",
+        "video_path": "media/videos/scene2/1080p60/Act1Scene2.mp4"
+    },
+    {
+        "id": "act1_scene3",
+        "group": "第一幕：从语言符号到概念网络",
+        "title": "场景3: 概念拆解(左)",
+        "desc": "聚焦「天下雨」，浮现出两个概念节点（天空、下雨）及其【发生】关系。",
+        "code_path": "src/act1/scene3.py",
+        "scene_class": "Act1Scene3",
+        "video_path": "media/videos/scene3/1080p60/Act1Scene3.mp4"
+    },
+    {
+        "id": "act1_scene4",
+        "group": "第一幕：从语言符号到概念网络",
+        "title": "场景4: 概念拆解(右)",
+        "desc": "聚焦「地会湿」，浮现出节点（地面、湿）及其【具有状态】关系。",
+        "code_path": "src/act1/scene4.py",
+        "scene_class": "Act1Scene4",
+        "video_path": "media/videos/scene4/1080p60/Act1Scene4.mp4"
+    },
+    {
+        "id": "act1_scene5",
+        "group": "第一幕：从语言符号到概念网络",
+        "title": "场景5: 完整概念网络",
+        "desc": "概念重组，因果显现。展示知识的深层结构是二维的网络。",
+        "code_path": "src/act1/scene5.py",
+        "scene_class": "Act1Scene5",
+        "video_path": "media/videos/scene5/1080p60/Act1Scene5.mp4"
+    },
+    {
+        "id": "act2_scene1",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景1: 静态限制",
+        "desc": "网络冻结，变灰白。揭示静态知识只是瞬间快照的局限。",
+        "code_path": "src/act2/scene1.py",
+        "scene_class": "Act2Scene1",
+        "video_path": "media/videos/scene1/1080p60/Act2Scene1.mp4"
+    },
+    {
+        "id": "act2_scene2",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景2: 系统显现",
+        "desc": "镜头拉远，露出更大的动态系统背景。",
+        "code_path": "src/act2/scene2.py",
+        "scene_class": "Act2Scene2",
+        "video_path": "media/videos/scene2/1080p60/Act2Scene2.mp4"
+    },
+    {
+        "id": "act2_scene3",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景3: 水循环结构",
+        "desc": "展示Stock(水量)和Flow(降雨/蒸发)的系统动力学结构。",
+        "code_path": "src/act2/scene3.py",
+        "scene_class": "Act2Scene3",
+        "video_path": "media/videos/scene3/1080p60/Act2Scene3.mp4"
+    },
+    {
+        "id": "act2_scene4",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景4: 动态运行",
+        "desc": "时间推进，降雨事件发生，数值动态变化。",
+        "code_path": "src/act2/scene4.py",
+        "scene_class": "Act2Scene4",
+        "video_path": "media/videos/scene4/1080p60/Act2Scene4.mp4"
+    },
+    {
+        "id": "act2_scene5",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景5: 静态定位",
+        "desc": "提取T=2时刻的状态，映射回静态知识。",
+        "code_path": "src/act2/scene5.py",
+        "scene_class": "Act2Scene5",
+        "video_path": "media/videos/scene5/1080p60/Act2Scene5.mp4"
+    },
+    {
+        "id": "act2_scene6",
+        "group": "第二幕：从静态知识到动态系统",
+        "title": "场景6: 真相对比",
+        "desc": "左侧静态孤立 vs 右侧动态完整。系统是电影，知识是剧照。",
+        "code_path": "src/act2/scene6.py",
+        "scene_class": "Act2Scene6",
+        "video_path": "media/videos/scene6/1080p60/Act2Scene6.mp4"
+    },
+    {
+        "id": "act3_scene1",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景1: 新知识呈现",
+        "desc": "如果A亮，那么B会亮。",
+        "code_path": "src/act3/scene1.py",
+        "scene_class": "Act3Scene1",
+        "video_path": "media/videos/scene1/1080p60/Act3Scene1.mp4"
+    },
+    {
+        "id": "act3_scene2",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景2: 静态拆解",
+        "desc": "静态的 A -> B。",
+        "code_path": "src/act3/scene2.py",
+        "scene_class": "Act3Scene2",
+        "video_path": "media/videos/scene2/1080p60/Act3Scene2.mp4"
+    },
+    {
+        "id": "act3_scene3",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景3: 机制显现",
+        "desc": "展示 A->B->C->D 的完整循环机制。",
+        "code_path": "src/act3/scene3.py",
+        "scene_class": "Act3Scene3",
+        "video_path": "media/videos/scene3/1080p60/Act3Scene3.mp4"
+    },
+    {
+        "id": "act3_scene4",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景4: 现实混沌",
+        "desc": "16个方块随机闪烁，从中识别出有规律的单元。",
+        "code_path": "src/act3/scene4.py",
+        "scene_class": "Act3Scene4",
+        "video_path": "media/videos/scene4/1080p60/Act3Scene4.mp4"
+    },
+    {
+        "id": "act3_scene5",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景5: 降噪处理",
+        "desc": "降低周围噪音透明度，凸显核心单元。",
+        "code_path": "src/act3/scene5.py",
+        "scene_class": "Act3Scene5",
+        "video_path": "media/videos/scene5/1080p60/Act3Scene5.mp4"
+    },
+    {
+        "id": "act3_scene68",
+        "group": "第三幕：从静态概念到动态机制",
+        "title": "场景6-8: 总结",
+        "desc": "知识应用 = 识别单元 + 理解机制 + 把握时序。",
+        "code_path": "src/act3/scenes_6_8.py",
+        "scene_class": "Act3Scene8",
+        "video_path": "media/videos/scenes_6_8/1080p60/Act3Scene8.mp4"
+    }
+]

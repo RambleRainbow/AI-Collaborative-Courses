@@ -1,102 +1,319 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知识本体与应用 - 动画分镜控制台</title>
+    <title>动画分镜管理平台</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e1e; color: #f0f0f0; padding: 20px; }
-        h1 { color: #61dafb; border-bottom: 2px solid #61dafb; padding-bottom: 10px; }
-        h2 { color: #ffd700; margin-top: 30px; }
-        .scene-card { background-color: #2d2d2d; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid #61dafb; display: flex; align-items: center; justify-content: space-between; }
-        .scene-info { flex: 1; }
-        .scene-title { font-weight: bold; font-size: 1.1em; }
-        .scene-desc { color: #aaa; font-size: 0.9em; margin-top: 5px; }
-        .status-badge { background-color: #4caf50; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
-        .status-pending { background-color: #ff9800; }
-        .cmd-box { background-color: #000; padding: 10px; border-radius: 4px; font-family: monospace; color: #0f0; margin-top: 5px; font-size: 0.9em; user-select: all; cursor: pointer; }
+        :root {
+            --bg-color: #1e1e1e;
+            --sidebar-width: 350px;
+            --primary-color: #61dafb;
+            --text-color: #f0f0f0;
+            --border-color: #333;
+            --card-bg: #2d2d2d;
+            --highlight-bg: #3a3a3a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* 布局 */
+        .sidebar {
+            width: var(--sidebar-width);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 侧边栏列表 */
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        .scene-group {
+            padding: 10px 20px;
+            font-size: 0.85em;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .scene-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .scene-item:hover {
+            background: var(--highlight-bg);
+        }
+
+        .scene-item.active {
+            background: #2c3e50;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .scene-title {
+            font-weight: 500;
+        }
+
+        .scene-meta {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        /* 主内容: 视频区 */
+        .video-container {
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            max-height: 60vh;
+            outline: none;
+        }
+
+        .placeholder {
+            color: #555;
+        }
+
+        /* 主内容: 详情区 */
+        .details-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .desc-box,
+        .code-box {
+            flex: 1;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            font-size: 1em;
+        }
+
+        /* 代码显示 */
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #d4d4d4;
+            margin: 0;
+        }
+
+        /* Copy button */
+        .cmd-display {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #0f0;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #222;
+        }
     </style>
 </head>
+
 <body>
 
-    <h1>知识本体与应用 - 动画分镜列表</h1>
-    <p>点击命令框复制渲染命令。</p>
-
-    <!-- Act 1 -->
-    <h2>第一幕：从语言符号到概念网络</h2>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景1: 语言符号的呈现 <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">如果天下雨，那么地会湿 (文字展示)</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene1.py Act1Scene1</div>
-        </div>
-    </div>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景2: 命题拆解 <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">分裂为前件和后件</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene2.py Act1Scene2</div>
-        </div>
-    </div>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景3: 概念拆解(左) <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">天空-(发生)->下雨</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene3.py Act1Scene3</div>
-        </div>
-    </div>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景4: 概念拆解(右) <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">地面-(具有状态)->湿</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene4.py Act1Scene4</div>
-        </div>
-    </div>
-     <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景5: 完整网络 <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">概念网络的重组与连接</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act1/scene5.py Act1Scene5</div>
-        </div>
+    <!-- 左侧列表 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">🎬 动画分镜列表</div>
+        <!-- List Items injected by JS -->
+        <div style="padding: 20px; color: #666;">加载中...</div>
     </div>
 
-    <!-- Act 2 -->
-    <h2>第二幕：从静态知识到动态系统</h2>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景1-6: 静态限制与动态系统 <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">静态快照 vs 动态水循环</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act2/scene1.py Act2Scene1</div>
+    <!-- 右侧详情 -->
+    <div class="main-content" id="main">
+        <!-- 上部：视频 -->
+        <div class="video-container">
+            <div class="placeholder" id="video-placeholder">请在左侧选择分镜</div>
+            <video id="player" controls style="display: none;">
+                <source src="" type="video/mp4">
+                您的浏览器不支持视频播放。
+            </video>
         </div>
-        <!-- 仅列出部分代表性命令，实际可以列出所有 -->
-    </div>
 
-    <!-- Act 3 -->
-    <h2>第三幕：从静态概念到动态机制</h2>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">场景1-5: 单元识别与降噪 <span class="status-badge">已实现</span></div>
-            <div class="scene-desc">A->B vs A-B-C-D 循环</div>
-            <div class="cmd-box" onclick="copy(this)">uv run manim -pql src/act3/scene3.py Act3Scene3</div>
+        <!-- 命令栏 -->
+        <div id="cmd-bar" class="cmd-display" onclick="copyCmd()" style="display:none;" title="点击复制命令">
+            Render Command
         </div>
-    </div>
 
-    <!-- Future Acts -->
-    <h2>第四幕 - 第六幕</h2>
-    <div class="scene-card">
-        <div class="scene-info">
-            <div class="scene-title">待实现场景 <span class="status-badge status-pending">待办</span></div>
-            <div class="scene-desc">已生成代码框架 (src/act4, src/act5, src/act6)</div>
+        <!-- 下部：详情 (描述 + 代码) -->
+        <div class="details-container">
+            <div class="desc-box">
+                <h3>📜 脚本描述</h3>
+                <p id="desc-text" style="line-height: 1.6; color: #ccc;">...</p>
+            </div>
+            <div class="code-box">
+                <h3>💻 对应代码</h3>
+                <pre><code id="code-content">...</code></pre>
+            </div>
         </div>
     </div>
 
     <script>
-        function copy(element) {
-            const text = element.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("命令已复制: " + text);
+        let currentScenes = [];
+
+        // 初始化
+        async function init() {
+            try {
+                const res = await fetch('/api/scenes');
+                const scenes = await res.json();
+                currentScenes = scenes;
+                renderSidebar(scenes);
+
+                // 默认选择第一个
+                if (scenes.length > 0) {
+                    selectScene(scenes[0].id);
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('sidebar').innerHTML = '<div style="padding:20px; color:red">加载失败，请确保服务器已启动 (python server.py)</div>';
+            }
+        }
+
+        // 渲染列表
+        function renderSidebar(scenes) {
+            const container = document.getElementById('sidebar');
+            container.innerHTML = '<div class="sidebar-header">🎬 动画分镜列表</div>';
+
+            let lastGroup = "";
+
+            scenes.forEach(scene => {
+                if (scene.group !== lastGroup) {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'scene-group';
+                    groupDiv.innerText = scene.group;
+                    container.appendChild(groupDiv);
+                    lastGroup = scene.group;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'scene-item';
+                item.id = `item-${scene.id}`;
+                item.onclick = () => selectScene(scene.id);
+                item.innerHTML = `
+                    <div class="scene-title">${scene.title}</div>
+                    <div class="scene-meta">${scene.scene_class}</div>
+                `;
+                container.appendChild(item);
             });
         }
+
+        // 选择分镜
+        async function selectScene(id) {
+            // UI Highlight
+            document.querySelectorAll('.scene-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`item-${id}`);
+            if (activeItem) activeItem.classList.add('active');
+
+            const scene = currentScenes.find(s => s.id === id);
+            if (!scene) return;
+
+            // 1. Update Video
+            const player = document.getElementById('player');
+            const placeholder = document.getElementById('video-placeholder');
+
+            // Check if video file "likely" exists (client side guess or just try loading)
+            // In a real app we might check status, here we just set src
+            player.src = scene.video_path;
+            player.style.display = 'block';
+            placeholder.style.display = 'none';
+            // player.play(); // Auto play optional
+
+            // 2. Update Description
+            document.getElementById('desc-text').innerText = scene.desc;
+
+            // 3. Update Command
+            const cmdDiv = document.getElementById('cmd-bar');
+            cmdDiv.style.display = 'block';
+            cmdDiv.innerText = `uv run manim -pql ${scene.code_path} ${scene.scene_class}`;
+
+            // 4. Fetch Code
+            const codeEl = document.getElementById('code-content');
+            codeEl.innerText = "正在加载代码...";
+            try {
+                const res = await fetch(`/api/code?path=${encodeURIComponent(scene.code_path)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    codeEl.innerText = data.content;
+                } else {
+                    codeEl.innerText = "无法读取代码文件";
+                }
+            } catch (e) {
+                codeEl.innerText = "请求错误";
+            }
+        }
+
+        function copyCmd() {
+            const text = document.getElementById('cmd-bar').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("命令已复制");
+            });
+        }
+
+        init();
     </script>
 </body>
+
 </html>
