@@ -177,9 +177,19 @@
 
     <!-- 左侧列表 -->
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">🎬 动画分镜列表</div>
-        <!-- List Items injected by JS -->
-        <div style="padding: 20px; color: #666;">加载中...</div>
+        <div class="sidebar-header">
+            <div>🎬 动画分镜</div>
+            <div style="margin-top:5px; font-size:0.8em; font-weight:normal;">
+                <button onclick="expandAll()"
+                    style="cursor:pointer; background:none; border:1px solid #555; color:#aaa; padding:2px 6px; border-radius:3px;">全部展开</button>
+                <button onclick="collapseAll()"
+                    style="cursor:pointer; background:none; border:1px solid #555; color:#aaa; padding:2px 6px; border-radius:3px; margin-left:5px;">全部折叠</button>
+            </div>
+        </div>
+        <div id="sidebar-content">
+            <!-- List Items injected by JS -->
+            <div style="padding: 20px; color: #666;">加载中...</div>
+        </div>
     </div>
 
     <!-- 右侧详情 -->
@@ -228,24 +238,35 @@
                 }
             } catch (e) {
                 console.error(e);
-                document.getElementById('sidebar').innerHTML = '<div style="padding:20px; color:red">加载失败，请确保服务器已启动 (python server.py)</div>';
+                document.getElementById('sidebar-content').innerHTML = '<div style="padding:20px; color:red">加载失败，请确保服务器已启动 (python server.py)</div>';
             }
         }
 
         // 渲染列表
         function renderSidebar(scenes) {
-            const container = document.getElementById('sidebar');
-            container.innerHTML = '<div class="sidebar-header">🎬 动画分镜列表</div>';
+            const container = document.getElementById('sidebar-content');
+            container.innerHTML = '';
 
             let lastGroup = "";
+            let groupContainer = null;
 
-            scenes.forEach(scene => {
+            scenes.forEach((scene, index) => {
                 if (scene.group !== lastGroup) {
-                    const groupDiv = document.createElement('div');
-                    groupDiv.className = 'scene-group';
-                    groupDiv.innerText = scene.group;
-                    container.appendChild(groupDiv);
+                    // Start new group
                     lastGroup = scene.group;
+                    const groupId = `group-${index}`;
+
+                    const groupHeader = document.createElement('div');
+                    groupHeader.className = 'scene-group';
+                    groupHeader.innerText = `▼ ${scene.group}`; // default expanded icon
+                    groupHeader.style.cursor = 'pointer';
+                    groupHeader.onclick = () => toggleGroup(groupId, groupHeader);
+                    container.appendChild(groupHeader);
+
+                    groupContainer = document.createElement('div');
+                    groupContainer.id = groupId;
+                    groupContainer.className = 'group-items'; // Helper class
+                    container.appendChild(groupContainer);
                 }
 
                 const item = document.createElement('div');
@@ -256,8 +277,29 @@
                     <div class="scene-title">${scene.title}</div>
                     <div class="scene-meta">${scene.scene_class}</div>
                 `;
-                container.appendChild(item);
+                groupContainer.appendChild(item);
             });
+        }
+
+        function toggleGroup(groupId, headerEl) {
+            const el = document.getElementById(groupId);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+                headerEl.innerText = headerEl.innerText.replace('▶', '▼');
+            } else {
+                el.style.display = 'none';
+                headerEl.innerText = headerEl.innerText.replace('▼', '▶');
+            }
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.group-items').forEach(el => el.style.display = 'block');
+            document.querySelectorAll('.scene-group').forEach(el => el.innerText = el.innerText.replace('▶', '▼'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.group-items').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.scene-group').forEach(el => el.innerText = el.innerText.replace('▼', '▶'));
         }
 
         // 选择分镜
