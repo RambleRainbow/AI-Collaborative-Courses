@@ -33,7 +33,7 @@ def get_act1_cast():
     # --- 2. Structural Elements (Arrows, Boxes, Labels) ---
     # Initialize them relative to the default positions of text_p/text_q
     # This ensures they have valid initial geometry.
-    arrow = Arrow(LEFT, RIGHT, color=GOLD)
+    arrow = Arrow(LEFT, RIGHT, color=GOLD).set_fill(opacity=1)
     arrow.next_to(part_p, RIGHT) # Default pos
     
     box_p = SurroundingRectangle(part_p, color=BLUE, buff=0.2)
@@ -41,7 +41,7 @@ def get_act1_cast():
     
     label_p = Text("前件命题", font=DEFAULT_FONT, font_size=24).set_color(GREY).next_to(box_p, UP)
     label_q = Text("后件命题", font=DEFAULT_FONT, font_size=24).set_color(GREY).next_to(box_q, UP)
-    label_rel = Text("条件关系", font=DEFAULT_FONT, font_size=24).set_color(GOLD).next_to(arrow, UP)
+    label_rel = Text("蕴含", font=DEFAULT_FONT, font_size=24).set_color(GOLD).next_to(arrow, UP)
     
     cast["arrow"] = arrow
     cast["box_p"] = box_p
