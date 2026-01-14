@@ -23,6 +23,42 @@ async def get_scenes():
     try:
         with open("scripts.json", "r", encoding="utf-8") as f:
             data = json.load(f)
+        
+        # Dynamic path resolution
+        # Search priorities
+        qualities = ["1080p60", "720p60", "480p15"] 
+        
+        for item in data:
+            # Check configured path first
+            if os.path.exists(item.get("video_path", "")):
+                continue
+                
+            # Try to resolve based on code_path and scene_class
+            # code_path: src/act1/scene1.py -> module_name: scene1
+            # structure: media/videos/{module_name}/{quality}/{SceneClass}.mp4
+            
+            try:
+                code_path = item.get("code_path", "")
+                scene_class = item.get("scene_class", "")
+                if code_path and scene_class:
+                    module_name = os.path.splitext(os.path.basename(code_path))[0]
+                    
+                    found = False
+                    for q in qualities:
+                        # Construct potential path
+                        # Note: relative to project root
+                        candidate = f"media/videos/{module_name}/{q}/{scene_class}.mp4"
+                        if os.path.exists(candidate):
+                            item["video_path"] = candidate
+                            found = True
+                            break
+                    
+                    if not found and not item.get("video_path"):
+                        # Keep default but maybe empty? or keep 1080p60 as target
+                        pass
+            except Exception as e:
+                print(f"Error resolving path for {item.get('id')}: {e}")
+
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
