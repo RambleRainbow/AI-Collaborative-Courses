@@ -13,7 +13,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False, # Changed to False to avoid 403 with wildcard origin
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -96,6 +96,62 @@ async def get_code(path: str):
         return {"content": content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.websocket("/ws/render")
+async def websocket_render(websocket: WebSocket, id: str):
+    print(f"WS Connection Request: {id}") # Debug log
+    await websocket.accept()
+    print("WS Connected")
+    try:
+        # Find scene info
+        with open("scripts.json", "r", encoding="utf-8") as f:
+            scenes = json.load(f)
+        scene = next((s for s in scenes if s["id"] == id), None)
+        
+        if not scene:
+            await websocket.send_text("Error: Scene ID not found.\n")
+            await websocket.close()
+            return
+
+        cmd = ["uv", "run", "manim", "-pql", scene["code_path"], scene["scene_class"]]
+        # Force flush to ensure real-time output
+        
+        await websocket.send_text(f"Executing: {' '.join(cmd)}\n\n")
+        
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        async def read_stream(stream, label):
+            while True:
+                line = await stream.readline()
+                if not line: break
+                text = line.decode('utf-8', errors='replace')
+                await websocket.send_text(text)
+
+        await asyncio.gather(
+            read_stream(process.stdout, "stdout"),
+            read_stream(process.stderr, "stderr")
+        )
+
+        exit_code = await process.wait()
+        await websocket.send_text(f"\nProcess finished with exit code {exit_code}")
+        
+        # Signal completion to frontend
+        if exit_code == 0:
+            await websocket.send_text("###DONE###")
+        
+    except Exception as e:
+        print(f"WS Error: {e}")
+        try:
+            await websocket.send_text(f"Server Error: {str(e)}")
+        except: pass
+    finally:
+        try:
+            await websocket.close()
+        except: pass
 
 if __name__ == "__main__":
     import uvicorn
