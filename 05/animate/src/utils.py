@@ -74,6 +74,48 @@ def create_concept_node(label, position=ORIGIN, color=BLUE, radius=0.6):
     text.set_color(WHITE)
     return VGroup(circle, text)
 
-# --- 模板类 ---
+class LightingUnit(VGroup):
+    """
+    A persistent object representing a 2x2 grid of lights (squares).
+    Supports a custom lighting sequence and state-based animation.
+    """
+    def __init__(self, size=2.0, sequence=[0, 1, 3, 2], labels=["A", "B", "C", "D"], show_labels=True, **kwargs):
+        super().__init__(**kwargs)
+        self.sqs = VGroup(*[Square(side_length=size/2.1).set_stroke(WHITE, width=2) for _ in range(4)])
+        self.sqs.arrange_in_grid(2, 2, buff=0.05)
+        self.add(self.sqs)
+        
+        self.lbls = None
+        if show_labels and labels:
+            self.lbls = VGroup(*[
+                Text(l, font=DEFAULT_FONT, font_size=size*18).move_to(s.get_center()) 
+                for l, s in zip(labels, self.sqs)
+            ])
+            self.add(self.lbls)
+            
+        self.sequence = sequence  # e.g., [0, 1, 3, 2] for A->B->D->C
+        self.current_step = -1    # -1 means all lights off
+        
+    def to_next_state(self, color=BLUE, opacity=1.0):
+        """
+        Advances the sequence and returns a list of animations.
+        """
+        self.current_step = (self.current_step + 1) % len(self.sequence)
+        active_idx = self.sequence[self.current_step]
+        
+        animations = []
+        for i, sq in enumerate(self.sqs):
+            if i == active_idx:
+                animations.append(sq.animate.set_fill(color, opacity=opacity).set_stroke(WHITE, opacity=1))
+            else:
+                animations.append(sq.animate.set_fill(opacity=0).set_stroke(GREY, opacity=0.3))
+        return animations
+
+    def get_frozen_state_anims(self):
+        """Returns animations to set the unit to a frozen (grey/dimmed) state."""
+        self.current_step = -1
+        return [
+            self.sqs.animate.set_fill(GREY, opacity=0.1).set_stroke(GREY, opacity=0.3)
+        ]
 
 
