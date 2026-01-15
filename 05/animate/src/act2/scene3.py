@@ -1,36 +1,33 @@
+from manim import FadeOut
 from manim import *
-import numpy as np
 
 def action(scene, cast):
-    # Focus is on system_group
+    # Animate all three flows with moving dots from cast
     
-    # Simple flow animation: dots moving down (Rain) and up (Evap)
-    
-    # Rain Drops
-    start_rain = cast["arrow_rain"].get_start()
-    end_rain = cast["arrow_rain"].get_end()
-    
-    rain_drops = VGroup(*[Dot(radius=0.08, color=BLUE) for _ in range(5)])
-    
-    # Evap Bubbles
-    # Curved arrow path is harder to trace exactly without path object, 
-    # but we can approximate or just move up on the right side
-    evap_bubbles = VGroup(*[Circle(radius=0.08, color=BLUE_B, stroke_width=1) for _ in range(5)])
-    
-    # Helper to animate flow
-    def update_rain(mob, alpha):
-        # Linear interpolation
-        mob.move_to(start_rain * (1-alpha) + end_rain * alpha)
-        mob.set_opacity(1 - (alpha-0.8)*5 if alpha > 0.8 else 1) # Fade at end
-        
-    # Animate 
+    rain_dots = cast["rain_dots"]
+    store_dots = cast["store_dots"]
+    evap_dots = cast["evap_dots"]
+
+    # Show dots and animate along markers
     scene.play(
-        MoveAlongPath(rain_drops[0], Line(start_rain, end_rain)),
-        rate_func=linear,
-        run_time=2
+        rain_dots[0].animate.set_fill(opacity=1),
+        store_dots[0].animate.set_fill(opacity=1),
+        evap_dots[0].animate.set_fill(opacity=1),
+        run_time=0.1
     )
     
-    # Loop visuals (symbolic)
-    # Ideally we use value trackers next scene
+    scene.play(
+        MoveAlongPath(rain_dots[0], cast["arrow_rain"]),
+        MoveAlongPath(store_dots[0], cast["arrow_store"]),
+        MoveAlongPath(evap_dots[0], cast["arrow_evap"]),
+        run_time=1.8,
+        rate_func=linear
+    )
+
+    scene.play(
+        FadeOut(rain_dots[0]),
+        FadeOut(store_dots[0]),
+        FadeOut(evap_dots[0]),
+        run_time=0.1
+    )
     
-    scene.wait(2)
