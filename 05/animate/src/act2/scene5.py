@@ -1,24 +1,31 @@
 from manim import *
-from src.utils import *
 
-class Act2Scene5(BaseScene):
-    def construct(self):
-        # 暂停在 t=2 时刻
-        # 提取片段: Rain -> Ground Increasing
-        
-        text_event = Text("降雨流 > 0  --->  地表水量增加", font=DEFAULT_FONT).move_to(ORIGIN)
-        
-        # 静态知识浮现
-        static_k = Text("如果天下雨，那么地会湿", font=DEFAULT_FONT, color=COLOR_STATIC).next_to(text_event, UP, buff=1)
-        
-        self.play(Write(text_event))
-        self.play(FadeIn(static_k))
-        
-        # 连接
-        lines = Lines(static_k.get_bottom(), text_event.get_top(), color=GOLD)
-        self.play(Create(lines))
-        
-        label = Text("系统在 t=2 时刻的局部状态关系", font=DEFAULT_FONT, font_size=24, color=YELLOW).next_to(lines, RIGHT)
-        self.play(Write(label))
-        
-        self.wait(4)
+def action(scene, cast):
+    # Freezes at t=2 state basically
+    
+    highlight_box = cast["highlight_box"] # Surrounds Rain flow structure
+    static_group = cast["static_group"] # The Act 1 map
+    
+    # Dim everything else?
+    # Create a full screen dark rect excluding the highlight region is hard.
+    # Instead, simple Highlight rect creation
+    
+    scene.play(Create(highlight_box))
+    
+    # Bring static knowledge back to prominent position (if it was hidden/small)
+    # Move System slightly left, Static slightly right?
+    
+    # For now, just show connection
+    # Static group is currently in UL corner scale 0.4 (from Scene 2)
+    
+    scene.play(
+        static_group.animate.scale(2.5).move_to(RIGHT*3), # restore size
+        run_time=2
+    )
+    
+    # Connection text
+    conn = DoubleArrow(highlight_box.get_right(), static_group.get_left(), color=GOLD)
+    txt = Text("等价", color=GOLD).next_to(conn, UP)
+    
+    scene.play(GrowArrow(conn), Write(txt))
+    scene.wait(3)

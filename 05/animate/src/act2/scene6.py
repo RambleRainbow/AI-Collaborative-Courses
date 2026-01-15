@@ -1,27 +1,36 @@
 from manim import *
-from src.utils import *
 
-class Act2Scene6(BaseScene):
-    def construct(self):
-        # 分屏
-        line = Line(UP*4, DOWN*4)
+def action(scene, cast):
+    # Split screen setup
+    
+    line = cast["split_line"]
+    l_static = cast["label_static"]
+    l_dynamic = cast["label_dynamic"]
+    
+    # Organize layout
+    # Left: Static Group (Static Knowledge)
+    # Right: System Group (Dynamic Truth)
+    
+    static_group = cast["static_group"]
+    system_group = cast["system_group"]
+    
+    scene.play(
+        Create(line),
+        Write(l_static),
+        Write(l_dynamic),
         
-        # 左侧: 静态知识
-        left_title = Text("静态知识观", font=DEFAULT_FONT).move_to(UP*3 + LEFT*3.5)
-        left_content = Text("孤立命题\n固化箭头", font=DEFAULT_FONT, font_size=32).next_to(left_title, DOWN, buff=1)
-        left_tag = Text("片面的、死的", font=DEFAULT_FONT, color=GREY).next_to(left_content, DOWN)
+        static_group.animate.move_to(LEFT * 3.5),
+        system_group.animate.move_to(RIGHT * 3.5),
         
-        # 右侧: 动态系统
-        right_title = Text("系统动态观", font=DEFAULT_FONT).move_to(UP*3 + RIGHT*3.5)
-        right_content = Text("循环系统\n流量变化", font=DEFAULT_FONT, font_size=32).next_to(right_title, DOWN, buff=1)
-        right_tag = Text("完整的、活的", font=DEFAULT_FONT, color=GOLD).next_to(right_content, DOWN)
+        # Cleanup previous annotations
+        FadeOut(cast["highlight_box"]),
+        FadeOut(cast["time_label"]), # Maybe keep time? Let's hide for clean visual
         
-        self.play(Create(line))
-        self.play(Write(left_title), Write(left_content), Write(left_tag))
-        self.play(Write(right_title), Write(right_content), Write(right_tag))
-        
-        # 总结
-        summary = Text("系统 = 动态运作机制\n知识 = 某时刻的关系描述", font=DEFAULT_FONT, color=YELLOW).to_edge(DOWN)
-        self.play(Write(summary))
-        
-        self.wait(5)
+        run_time=2
+    )
+    
+    # Final caption
+    caption = Text("知识只是系统的快照", color=YELLOW, font_size=40).to_edge(DOWN)
+    scene.play(Write(caption))
+    
+    scene.wait(3)
