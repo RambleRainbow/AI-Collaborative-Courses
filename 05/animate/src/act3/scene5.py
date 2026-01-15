@@ -18,7 +18,7 @@ def action(scene, cast):
     scene.play(*anims, run_time=2)
     
     # 2. Focused Cycle
-    for _ in range(4):
+    for _ in range(4*3):
         scene.play(*target_unit.to_next_state(), run_time=0.6)
     
     scene.wait(1)

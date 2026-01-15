@@ -18,4 +18,8 @@ def action(scene, cast):
     scene.play(Create(arrow))
     scene.play(Write(insight))
     
+    # Run the dynamic unit cycle to show the "Mechanism"
+    for _ in range(4*3):
+        scene.play(*cast["comp_unit"].to_next_state(), run_time=0.5)
+    
     scene.wait(3)

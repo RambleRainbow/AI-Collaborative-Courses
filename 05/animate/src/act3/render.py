@@ -7,8 +7,6 @@ import src.act3.scene3 as s3
 import src.act3.scene4 as s4
 import src.act3.scene5 as s5
 import src.act3.scene6 as s6
-import src.act3.scene7 as s7
-import src.act3.scene8 as s8
 
 class Act3(BaseScene):
     def construct(self):
@@ -38,11 +36,3 @@ class Act3(BaseScene):
         # 6. Scene 6: Mechanism Comparison
         self.next_section(name="Scene 6")
         s6.action(self, self.cast)
-        
-        # 7. Scene 7: Pitfall
-        self.next_section(name="Scene 7")
-        s7.action(self, self.cast)
-        
-        # 8. Scene 8: Summary
-        self.next_section(name="Scene 8")
-        s8.action(self, self.cast)

@@ -77,38 +77,21 @@ def get_act3_cast():
     cast["target_unit_idx"] = target_unit_idx
     
     # --- 4. Comparison (Scene 6) ---
+    # Left (Static Description)
     comp_left_t = Text("A,B,D,C依次亮", font=DEFAULT_FONT, color=COLOR_STATIC).shift(LEFT*4)
     comp_left_lbl = Text("静态描述", font=DEFAULT_FONT, font_size=24).next_to(comp_left_t, DOWN)
+
+    # Right (Loop Mechanism) - Using our abstracted LightingUnit
+    comp_unit = LightingUnit(size=3.0, sequence=[0, 1, 3, 2], labels=["A", "B", "C", "D"]).shift(RIGHT*4)
+    comp_right_lbl = Text("循环机制", font=DEFAULT_FONT, font_size=24).next_to(comp_unit, DOWN)
     
-    comp_right_loop = Circle(radius=1.5, color=COLOR_DYNAMIC).shift(RIGHT*4)
-    comp_right_dots = VGroup(*[Dot(point=comp_right_loop.point_from_proportion(i/4), color=WHITE) for i in range(4)])
-    comp_right_lbl = Text("循环机制", font=DEFAULT_FONT, font_size=24).next_to(comp_right_loop, DOWN)
-    
-    comp_arrow = DoubleArrow(comp_left_t.get_right(), comp_right_loop.get_left(), color=GOLD)
+    comp_arrow = DoubleArrow(comp_left_t.get_right(), comp_unit.get_left(), color=GOLD)
     comp_insight = Text("片面观察 vs 完整机制", font=DEFAULT_FONT, font_size=36, color=YELLOW).to_edge(DOWN)
     
     cast["comp_left"] = VGroup(comp_left_t, comp_left_lbl)
-    cast["comp_right"] = VGroup(comp_right_loop, comp_right_dots, comp_right_lbl)
+    cast["comp_right"] = VGroup(comp_unit, comp_right_lbl)
+    cast["comp_unit"] = comp_unit
     cast["comp_arrow"] = comp_arrow
     cast["comp_insight"] = comp_insight
 
-    # --- 5. Scene 7 Texts ---
-    t1 = Text("只记静态: 看到A -> 期待B", font=DEFAULT_FONT, font_size=32).shift(UP*1)
-    t2 = Text("实际机制: A -> B -> D -> C", font=DEFAULT_FONT, font_size=32)
-    t3 = Text("如果在D处看到A(误判), 期待B? 错!", font=DEFAULT_FONT, font_size=32, color=RED).shift(DOWN*1)
-    
-    cast["s7_t1"] = t1
-    cast["s7_t2"] = t2
-    cast["s7_t3"] = t3
-    
-    # --- 6. Summary (Scene 8) ---
-    summ_lines = VGroup(
-        Text("真实世界 = 复杂动态", font=DEFAULT_FONT),
-        Text("单元机制 = 可识别的规律", font=DEFAULT_FONT),
-        Text("语言知识 = 机制的简化描述", font=DEFAULT_FONT),
-        Text("应用 = 识别 + 理解 + 时序", font=DEFAULT_FONT, color=GOLD)
-    ).arrange(DOWN, buff=0.5)
-    
-    cast["summ_lines"] = summ_lines
-    
     return cast
