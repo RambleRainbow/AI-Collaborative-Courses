@@ -106,7 +106,10 @@ def get_act2_cast():
     )
     
     cast["system_group"] = group_system
-    # Expose trackers/values for animation
+    # Expose trackers/values/rects for animation
+    cast["stock_atmos_rect"] = stock_atmos_rect
+    cast["stock_surface_rect"] = stock_surface_rect
+    cast["stock_soil_rect"] = stock_soil_rect
     cast["val_atmos"] = val_atmos
     cast["val_surface"] = val_surface
     cast["val_soil"] = val_soil

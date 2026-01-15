@@ -17,5 +17,3 @@ def action(scene, cast):
     # 2. Show System
     # System group is defined in cast with fixed positions (Up/Down)
     scene.play(FadeIn(system_group), run_time=2)
-    
-    scene.wait(2)

@@ -7,7 +7,6 @@ def action(scene, cast):
     # 1. 直接显示完整的静态概念图（与图片一致）
     static_group = cast["static_group"]
     scene.add(static_group)
-    scene.wait(2)
     
     # 2. "冻结"效果 - 静态知识的局限性
     scene.play(
