@@ -79,16 +79,18 @@ class LightingUnit(VGroup):
     A persistent object representing a 2x2 grid of lights (squares).
     Supports a custom lighting sequence and state-based animation.
     """
-    def __init__(self, size=2.0, sequence=[0, 1, 3, 2], labels=["A", "B", "C", "D"], show_labels=True, **kwargs):
+    def __init__(self, size=2.0, sequence=[0, 1, 3, 2], labels=["A", "B", "C", "D"], show_labels=True, buff=0.1, **kwargs):
         super().__init__(**kwargs)
-        self.sqs = VGroup(*[Square(side_length=size/2.1).set_stroke(WHITE, width=2) for _ in range(4)])
-        self.sqs.arrange_in_grid(2, 2, buff=0.05)
+        # Calculate square side length so that 2*sq_side + buff = size
+        sq_side = (size - buff) / 2
+        self.sqs = VGroup(*[Square(side_length=sq_side).set_stroke(WHITE, width=2) for _ in range(4)])
+        self.sqs.arrange_in_grid(2, 2, buff=buff)
         self.add(self.sqs)
         
         self.lbls = None
         if show_labels and labels:
             self.lbls = VGroup(*[
-                Text(l, font=DEFAULT_FONT, font_size=size*18).move_to(s.get_center()) 
+                Text(l, font=DEFAULT_FONT, font_size=sq_side * 0.8 * 36).move_to(s.get_center()) 
                 for l, s in zip(labels, self.sqs)
             ])
             self.add(self.lbls)

@@ -33,12 +33,10 @@ def action(scene, cast):
     target_idx = cast["target_unit_idx"]
     target_unit = units_16[target_idx]
     frame = cast["frame_16"]
-    label = cast["label_16"]
     
     # Highlight one unit
     scene.play(
         Create(frame), 
-        Write(label),
         *[units_16[i].animate.set_stroke(opacity=0.1) for i in range(16) if i != target_idx]
     )
     

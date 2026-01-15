@@ -5,8 +5,7 @@ def action(scene, cast):
     # Cleanup Act 3 Scene 5 elements
     scene.play(
         FadeOut(cast["units_16"]), 
-        FadeOut(cast["frame_16"]), 
-        FadeOut(cast["filter_lbl"])
+        FadeOut(cast["frame_16"])
     )
     
     left = cast["comp_left"]

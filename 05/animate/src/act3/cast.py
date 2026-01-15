@@ -45,6 +45,12 @@ def get_act3_cast():
 
     # --- 3. 16-Unit Nested Matrix (Scene 4-5) ---
     # 4x4 grid of 2x2 units.
+    # 4x4 grid of 2x2 units. Total 8x8 squares.
+    # To make the grid uniform, buff_internal must equal buff_external.
+    gap = 0.1
+    unit_size = 1.0 # arbitrary, but will affect total size
+    # Total width of 4 units + 3 external gaps = 4 * unit_size + 3 * gap
+    
     units_16 = VGroup()
     correct_seq = [0, 1, 3, 2]
     target_unit_idx = 5 
@@ -56,25 +62,22 @@ def get_act3_cast():
             seq = [0, 1, 2, 3]
             random.shuffle(seq)
         
-        # Nested units are smaller and have no labels initially
-        unit = LightingUnit(size=1.2, sequence=seq, show_labels=False)
+        # Internal buff set to 'gap'
+        unit = LightingUnit(size=unit_size, sequence=seq, show_labels=False, buff=gap)
         units_16.add(unit)
     
-    units_16.arrange_in_grid(4, 4, buff=0.5).scale(0.9).shift(LEFT*1)
+    # External buff set to 'gap'
+    units_16.arrange_in_grid(4, 4, buff=gap).scale(1) # Center it
     
     target_unit = units_16[target_unit_idx]
     frame_16 = SurroundingRectangle(target_unit, color=GOLD, buff=0.1)
-    label_16 = Text("单元识别", font=DEFAULT_FONT, color=GOLD, font_size=32).next_to(frame_16, UP)
-    filter_lbl = Text("过滤噪音", font=DEFAULT_FONT, color=WHITE).to_edge(DOWN)
     
     cast["units_16"] = units_16
     cast["frame_16"] = frame_16
-    cast["label_16"] = label_16
-    cast["filter_lbl"] = filter_lbl
     cast["target_unit_idx"] = target_unit_idx
     
     # --- 4. Comparison (Scene 6) ---
-    comp_left_t = Text("A亮 -> B亮", font=DEFAULT_FONT, color=COLOR_STATIC).shift(LEFT*4)
+    comp_left_t = Text("A,B,D,C依次亮", font=DEFAULT_FONT, color=COLOR_STATIC).shift(LEFT*4)
     comp_left_lbl = Text("静态描述", font=DEFAULT_FONT, font_size=24).next_to(comp_left_t, DOWN)
     
     comp_right_loop = Circle(radius=1.5, color=COLOR_DYNAMIC).shift(RIGHT*4)

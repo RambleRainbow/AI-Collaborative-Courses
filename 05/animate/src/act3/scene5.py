@@ -7,7 +7,6 @@ def action(scene, cast):
     target_unit = units_16[target_idx]
     
     # 1. Noise Reduction
-    scene.play(FadeOut(cast["label_16"]))
     
     anims = []
     for i in range(16):
@@ -16,8 +15,7 @@ def action(scene, cast):
         else:
             anims.append(units_16[i].animate.set_stroke(opacity=0.05).set_fill(opacity=0))
     
-    filter_lbl = cast["filter_lbl"]
-    scene.play(*anims, Write(filter_lbl), run_time=2)
+    scene.play(*anims, run_time=2)
     
     # 2. Focused Cycle
     for _ in range(4):
