@@ -5,43 +5,47 @@ def get_act2_cast():
     cast = {}
     
     # --- 1. Act 1 Concept Map (The "Static Knowledge") ---
-    # Recreating the final state of Act 1 Scene 5
-    # Layout:
-    #      Sky (UL)          Ground (UR)
-    #       |                  |
-    #      (Occur)           (HasState)
-    #       |                  |
-    #      Rain (DL) --(Cause)--> Wet (DR)
+    # Layout matching the reference image:
+    #      天空 (UL)                    地面 (UR)
+    #       |                            |
+    #     (发生)                      (具有状态)
+    #       |           蕴含             |
+    #      下雨 (DL) ─────────→        湿 (DR)
     
-    # Constants for layout
+    # Constants for layout - wider spacing
     LEFT_POS = LEFT * 3.5
     RIGHT_POS = RIGHT * 3.5
-    UP_OFFSET = UP * 1.5
-    DOWN_OFFSET = DOWN * 1.5
+    UP_OFFSET = UP * 1.8
+    DOWN_OFFSET = DOWN * 1.8
     
-    # Sky/Rain Group
+    # Sky/Rain Group (Left Side)
     c_sky = create_concept_node("天空", LEFT_POS + UP_OFFSET, color=BLUE)
     c_rain = create_concept_node("下雨", LEFT_POS + DOWN_OFFSET, color=BLUE)
     l_left = DashedLine(c_sky.get_bottom(), c_rain.get_top(), color=BLUE_A)
-    # Note: absolute position for label
-    txt_left = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(l_left, LEFT)
+    txt_left = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(l_left, RIGHT, buff=0.15)
     
-    # Ground/Wet Group
+    # Ground/Wet Group (Right Side)
     c_ground = create_concept_node("地面", RIGHT_POS + UP_OFFSET, color=BLUE)
     c_wet = create_concept_node("湿", RIGHT_POS + DOWN_OFFSET, color=BLUE)
     l_right = DashedLine(c_ground.get_bottom(), c_wet.get_top(), color=BLUE_A)
-    txt_right = Text("(具有状态)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(l_right, RIGHT)
+    txt_right = Text("(具有状态)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(l_right, LEFT, buff=0.15)
     
-    # Causal Arrow
-    arrow_cause = Arrow(c_rain.get_right(), c_wet.get_left(), color=GOLD)
-    txt_cause = Text("(因果)", font=DEFAULT_FONT, font_size=24, color=GOLD).next_to(arrow_cause, DOWN)
+    # Implication Arrow: middle position (from txt_left right to txt_right left)
+    arrow_cause = Arrow(txt_left.get_right(), txt_right.get_left(), color=GOLD, buff=0.15)
+    txt_cause = Text("蕴含", font=DEFAULT_FONT, font_size=28, color=GOLD).next_to(arrow_cause, UP, buff=0.1)
     
-    # Group them
-    group_static = VGroup(c_sky, c_rain, l_left, txt_left, c_ground, c_wet, l_right, txt_right, arrow_cause, txt_cause)
+    # Group them (static map = Act 1 final state for Act 2)
+    group_static_core = VGroup(c_sky, c_rain, l_left, txt_left, c_ground, c_wet, l_right, txt_right)
+    group_static = VGroup(group_static_core, arrow_cause, txt_cause)
     
     cast["static_group"] = group_static
+    cast["static_core"] = group_static_core  # Without arrow, for transition
     cast["c_sky"] = c_sky
-    # ... expose others if needed individually, but group is often enough for scaling
+    cast["c_rain"] = c_rain
+    cast["c_ground"] = c_ground
+    cast["c_wet"] = c_wet
+    cast["arrow_cause"] = arrow_cause
+    cast["txt_cause"] = txt_cause
     
     # Question Mark for Scene 1
     q_mark = Text("?", font_size=96, color=RED).next_to(group_static, UP)

@@ -68,7 +68,7 @@ def get_act1_cast():
     concept_ground = create_concept_node("地面", UP*1.5)
     concept_wet = create_concept_node("湿", DOWN*1.5)
     line_right = DashedLine(concept_ground.get_bottom(), concept_wet.get_top(), color=BLUE_A)
-    line_label_right = Text("(具有状态)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(line_right, RIGHT)
+    line_label_right = Text("(具有状态)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(line_right, LEFT)
     
     cast["concept_ground"] = concept_ground
     cast["concept_wet"] = concept_wet
