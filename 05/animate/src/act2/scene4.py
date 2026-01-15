@@ -27,9 +27,9 @@ def action(scene, cast):
         Transform(val_atmos, get_target("1010", rect_atmos)),
         Transform(val_surface, get_target("495", rect_surface)),
         Transform(val_soil, get_target("195", rect_soil)),
-        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
-        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
-        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
+        MoveAlongPath(cast["rain_dot"], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dot"], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dot"], cast["arrow_evap"]),
         run_time=2
     )
     
@@ -40,9 +40,9 @@ def action(scene, cast):
         Transform(val_atmos, get_target("970", rect_atmos)),
         Transform(val_surface, get_target("540", rect_surface)),
         Transform(val_soil, get_target("190", rect_soil)),
-        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
-        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
-        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
+        MoveAlongPath(cast["rain_dot"], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dot"], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dot"], cast["arrow_evap"]),
         cast["arrow_rain"].animate.set_stroke(width=10),
         run_time=2
     )
@@ -53,8 +53,8 @@ def action(scene, cast):
         Transform(val_atmos, get_target("930", rect_atmos)),
         Transform(val_surface, get_target("585", rect_surface)),
         Transform(val_soil, get_target("185", rect_soil)),
-        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
-        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
-        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
+        MoveAlongPath(cast["rain_dot"], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dot"], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dot"], cast["arrow_evap"]),
         run_time=2
     )

@@ -82,27 +82,27 @@ def get_act2_cast():
     arrow_rain = Arrow(stock_atmos_rect.get_right(), stock_surface_rect.get_left(), color=BLUE, buff=0.1)
     label_rain = Text("降雨流", font=DEFAULT_FONT, font_size=20, color=BLUE).next_to(arrow_rain, UP, buff=0.1)
     val_rain = Text("0", font=DEFAULT_FONT, font_size=18, color=BLUE).next_to(label_rain, UP, buff=0.05)
-    rain_dots = VGroup(*[Dot(radius=0.08, color=BLUE, fill_opacity=0) for _ in range(3)])
+    rain_dot = Dot(radius=0.08, color=BLUE, fill_opacity=0)
 
     # Flow 2: 储存 (Store): Surface -> Soil
     arrow_store = Arrow(stock_surface_rect.get_right(), stock_soil_rect.get_left(), color=GREEN_B, buff=0.1)
     label_store = Text("储存流", font=DEFAULT_FONT, font_size=20, color=GREEN_B).next_to(arrow_store, UP, buff=0.1)
     val_store = Text("5", font=DEFAULT_FONT, font_size=18, color=GREEN_B).next_to(label_store, UP, buff=0.05)
-    store_dots = VGroup(*[Dot(radius=0.08, color=GREEN_B, fill_opacity=0) for _ in range(3)])
+    store_dot = Dot(radius=0.08, color=GREEN_B, fill_opacity=0)
 
     # Flow 3: 蒸发 (Evap): Soil -> Atmos (Concave downward arc)
     arrow_evap = CurvedArrow(stock_soil_rect.get_bottom(), stock_atmos_rect.get_bottom(), angle=-PI/2, color=BLUE_B)
     label_evap = Text("蒸发流", font=DEFAULT_FONT, font_size=20, color=BLUE_B).next_to(arrow_evap, DOWN, buff=0.1)
     val_evap = Text("10", font=DEFAULT_FONT, font_size=18, color=BLUE_B).next_to(label_evap, DOWN, buff=0.05)
-    evap_dots = VGroup(*[Dot(radius=0.08, color=BLUE_B, fill_opacity=0) for _ in range(3)])
+    evap_dot = Dot(radius=0.08, color=BLUE_B, fill_opacity=0)
 
     group_system = VGroup(
         stock_atmos_rect, stock_atmos_label, val_atmos,
         stock_surface_rect, stock_surface_label, val_surface,
         stock_soil_rect, stock_soil_label, val_soil,
-        arrow_rain, label_rain, val_rain, rain_dots,
-        arrow_store, label_store, val_store, store_dots,
-        arrow_evap, label_evap, val_evap, evap_dots
+        arrow_rain, label_rain, val_rain, rain_dot,
+        arrow_store, label_store, val_store, store_dot,
+        arrow_evap, label_evap, val_evap, evap_dot
     )
     
     cast["system_group"] = group_system
@@ -119,9 +119,9 @@ def get_act2_cast():
     cast["arrow_rain"] = arrow_rain
     cast["arrow_store"] = arrow_store
     cast["arrow_evap"] = arrow_evap
-    cast["rain_dots"] = rain_dots
-    cast["store_dots"] = store_dots
-    cast["evap_dots"] = evap_dots
+    cast["rain_dot"] = rain_dot
+    cast["store_dot"] = store_dot
+    cast["evap_dot"] = evap_dot
     cast["label_rain"] = label_rain
     cast["label_store"] = label_store
     cast["label_evap"] = label_evap
