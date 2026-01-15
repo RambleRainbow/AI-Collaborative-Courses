@@ -19,11 +19,10 @@ def action(scene, cast):
         Write(l_static),
         Write(l_dynamic),
         
-        static_group.animate.scale(0.8).move_to(LEFT * 3.5),
-        system_group.animate.scale(0.5).move_to(RIGHT * 3.5),
+        static_group.animate.move_to(LEFT * 4),
+        system_group.animate.move_to(RIGHT * 4),
         
         # Cleanup previous annotations
-        FadeOut(cast["highlight_box"]),
         FadeOut(cast["time_label"]),
         
         run_time=2

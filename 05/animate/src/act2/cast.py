@@ -122,6 +122,9 @@ def get_act2_cast():
     cast["rain_dots"] = rain_dots
     cast["store_dots"] = store_dots
     cast["evap_dots"] = evap_dots
+    cast["label_rain"] = label_rain
+    cast["label_store"] = label_store
+    cast["label_evap"] = label_evap
     
     # Time Axis / Timer
     time_label = Text("t = 0", font_size=40).to_corner(UL)
@@ -129,7 +132,7 @@ def get_act2_cast():
     
     # --- 3. Comparison Elements (Scene 5/6) ---
     # Highlight box for system fragment
-    highlight_box = SurroundingRectangle(VGroup(stock_atmos_rect, arrow_rain, stock_surface_rect), color=GOLD, buff=0.2)
+    highlight_box = SurroundingRectangle(VGroup(stock_atmos_rect, arrow_rain, stock_surface_rect, stock_soil_rect), color=GOLD, buff=0.2)
     cast["highlight_box"] = highlight_box
     
     # Split Screen Line

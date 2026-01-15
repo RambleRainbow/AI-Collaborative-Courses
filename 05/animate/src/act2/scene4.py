@@ -27,16 +27,22 @@ def action(scene, cast):
         Transform(val_atmos, get_target("1010", rect_atmos)),
         Transform(val_surface, get_target("495", rect_surface)),
         Transform(val_soil, get_target("195", rect_soil)),
+        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
         run_time=2
     )
     
     # --- t=2: 开始降雨 ---
     scene.play(
         Transform(time_label, create_text("t = 2 (下雨)", font_size=40, color=BLUE).to_corner(UL)),
-        Transform(val_rain, get_target("50", cast["arrow_rain"], color=BLUE, font_size=24).shift(UP*0.5)),
+        Transform(val_rain, get_target("50", cast["arrow_rain"], color=BLUE, font_size=18).next_to(cast["label_rain"], UP, buff=0.05)),
         Transform(val_atmos, get_target("970", rect_atmos)),
         Transform(val_surface, get_target("540", rect_surface)),
         Transform(val_soil, get_target("190", rect_soil)),
+        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
         cast["arrow_rain"].animate.set_stroke(width=10),
         run_time=2
     )
@@ -47,5 +53,8 @@ def action(scene, cast):
         Transform(val_atmos, get_target("930", rect_atmos)),
         Transform(val_surface, get_target("585", rect_surface)),
         Transform(val_soil, get_target("185", rect_soil)),
+        MoveAlongPath(cast["rain_dots"][0], cast["arrow_rain"]),
+        MoveAlongPath(cast["store_dots"][0], cast["arrow_store"]),
+        MoveAlongPath(cast["evap_dots"][0], cast["arrow_evap"]),
         run_time=2
     )
