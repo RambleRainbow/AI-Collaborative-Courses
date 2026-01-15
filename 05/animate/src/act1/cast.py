@@ -52,10 +52,12 @@ def get_act1_cast():
     
     # --- 3. Concept Map Elements (Scene 3 & 4) ---
     # Left Side: Sky/Rain
-    concept_sky = create_concept_node("天空", UP*1.5 + LEFT*0.5)
-    concept_rain = create_concept_node("下雨", DOWN*1.5 + LEFT*0.5)
+    # Aligned with text_p (approx x=-1.3)
+    ALIGN_X_LEFT = LEFT * 1.3
+    concept_sky = create_concept_node("天空", UP*1.5 + ALIGN_X_LEFT)
+    concept_rain = create_concept_node("下雨", DOWN*1.5 + ALIGN_X_LEFT)
     line_left = DashedLine(concept_sky.get_bottom(), concept_rain.get_top(), color=BLUE_A)
-    line_label_left = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=BLUE_A).next_to(line_left, RIGHT)
+    line_label_left = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=WHITE).next_to(line_left, RIGHT)
     
     cast["concept_sky"] = concept_sky
     cast["concept_rain"] = concept_rain
