@@ -17,9 +17,3 @@ def action(scene, cast):
     
     scene.play(Write(group), run_time=2)
     scene.wait(2)
-    
-    # 确保状态为实心文字 (Fix for write animation artifacts)
-    group.set_fill(opacity=1)
-    group.set_stroke(width=0)
-    
-    scene.wait(2)

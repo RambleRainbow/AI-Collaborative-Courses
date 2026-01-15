@@ -34,4 +34,4 @@ def action(scene, cast):
         run_time=2
     )
     
-    scene.wait(5)
+    scene.wait(2)

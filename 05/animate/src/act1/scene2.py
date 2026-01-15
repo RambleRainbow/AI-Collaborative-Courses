@@ -57,11 +57,4 @@ def action(scene, cast):
         Write(label_rel),
         run_time=2
     )
-    
     scene.wait(2)
-    
-    # State Fixes
-    arrow.set_fill(opacity=1)
-    label_p.set_color(GREY)
-    label_q.set_color(GREY)
-    label_rel.set_color(GOLD)
