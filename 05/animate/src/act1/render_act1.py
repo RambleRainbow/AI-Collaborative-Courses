@@ -34,8 +34,7 @@ def main():
         ("src/act1/scene1.py", "Act1Scene1"),
         ("src/act1/scene2.py", "Act1Scene2"),
         ("src/act1/scene3.py", "Act1Scene3"),
-        ("src/act1/scene4.py", "Act1Scene4"),
-        ("src/act1/scene5.py", "Act1Scene5"),
+        ("src/act1/scene4.py", "Act1Scene4")
     ]
     
     failed = []

@@ -6,17 +6,6 @@ def action(scene, cast):
     box_p = cast["box_p"]
     label_p = cast["label_p"]
     
-    # 隐藏右侧干扰项
-    scene.play(
-        FadeOut(cast["text_q"]),
-        FadeOut(cast["arrow"]),
-        FadeOut(cast["box_q"]),
-        FadeOut(cast["label_q"]),
-        FadeOut(cast["label_rel"]),
-        # text_p 保持原地 (Stationary)
-        run_time=2
-    )
-    
     # 引入概念图
     concept_sky = cast["concept_sky"]
     concept_rain = cast["concept_rain"]
