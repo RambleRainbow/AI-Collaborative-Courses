@@ -1,26 +1,25 @@
 from manim import *
-from src.utils import *
-from src.act1.cast import *
 
-class Act1Scene1(BaseScene):
-    def construct(self):
-        # 1. 加载所有角色
-        self.cast = get_act1_cast()
-        
-        # 组装句子 (方便动画)
-        text = VGroup(
-            self.cast["text_if"],
-            self.cast["text_p"],
-            self.cast["text_comma"],
-            self.cast["text_then"],
-            self.cast["text_q"]
-        )
-        
-        # 2. 动画
-        self.play(Write(text), run_time=2)
-        self.wait(2)
-        
-        self.wait(2)
-        
-        # 3. 保存状态 (保存整组 Cast)
-        self.save_state("act1_scene1")
+def action(scene, cast):
+    # 1. 引用 Cast
+    text_if = cast["text_if"]
+    text_p = cast["text_p"]
+    text_comma = cast["text_comma"]
+    text_then = cast["text_then"]
+    text_q = cast["text_q"]
+    
+    # 2. 动画逻辑: 呈现整句句子
+    # Scene 1 treat them as a group effectively
+    group = VGroup(text_if, text_p, text_comma, text_then, text_q)
+    
+    # 确保位置正确 (初始位置 already defined in cast implicitly via create)
+    # 剧中显示
+    
+    scene.play(Write(group), run_time=2)
+    scene.wait(2)
+    
+    # 确保状态为实心文字 (Fix for write animation artifacts)
+    group.set_fill(opacity=1)
+    group.set_stroke(width=0)
+    
+    scene.wait(2)
