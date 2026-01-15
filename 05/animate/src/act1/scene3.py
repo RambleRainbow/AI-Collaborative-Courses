@@ -22,46 +22,18 @@ class Act1Scene3(BaseScene):
         )
         self.wait(1)
 
-        # 3. 动画: 聚焦左侧
-        # 引用便捷变量
-        text_p = self.cast["text_p"]
-        box_p = self.cast["box_p"]
-        
-        self.play(
-            FadeOut(self.cast["text_q"]),
-            FadeOut(self.cast["arrow"]),
-            FadeOut(self.cast["box_q"]),
-            FadeOut(self.cast["label_p"]),
-            FadeOut(self.cast["label_q"]),
-            FadeOut(self.cast["label_rel"]),
-            text_p.animate.move_to(ORIGIN),
-            box_p.animate.move_to(ORIGIN),
-            run_time=2
-        )
-        
         # 4. 引入概念图 (已在 Cast 中定义)
         concept_sky = self.cast["concept_sky"]
         concept_rain = self.cast["concept_rain"]
         line = self.cast["line_left"]
         line_label = self.cast["line_label_left"]
         
-        self.play(
-            text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN),
-            FadeOut(box_p),
-            run_time=2
-        )
+        # self.play(
+        #     text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN),
+        #     FadeOut(box_p),
+        #     run_time=2
+        # )
         
-        self.play(
-            FadeIn(concept_sky),
-            FadeIn(concept_rain),
-            Create(line),
-            Write(line_label),
-            run_time=2
-        )
-        
-        self.wait(5)
-        
-        self.save_state("act1_scene3")
         # 脚本图示:
         #       ⭕️ 天空
         #        |
@@ -69,18 +41,18 @@ class Act1Scene3(BaseScene):
         #        |
         #       ⭕️ 下雨
         
-        concept_sky = create_concept_node("天空", UP*1.5)
-        concept_rain = create_concept_node("下雨", DOWN*1.5)
+        # concept_sky = create_concept_node("天空", UP*1.5)
+        # concept_rain = create_concept_node("下雨", DOWN*1.5)
         
-        line = DashedLine(concept_sky.get_bottom(), concept_rain.get_top(), color=BLUE_A)
-        line_label = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=BLUE_A).next_to(line, RIGHT)
+        # line = DashedLine(concept_sky.get_bottom(), concept_rain.get_top(), color=BLUE_A)
+        # line_label = Text("(发生)", font=DEFAULT_FONT, font_size=20, color=BLUE_A).next_to(line, RIGHT)
         
         # 动画
-        self.play(
-            text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN), # 变透明并移到底部作为备注
-            FadeOut(box_p),
-            run_time=2
-        )
+        # self.play(
+        #     text_p.animate.set_opacity(0.2).scale(0.5).to_edge(DOWN), # 变透明并移到底部作为备注
+        #     FadeOut(box_p),
+        #     run_time=2
+        # )
         
         self.play(
             FadeIn(concept_sky),

@@ -71,6 +71,7 @@ def create_concept_node(label, position=ORIGIN, color=BLUE_E, radius=0.6):
     """创建概念节点 (圆圈+文字)"""
     circle = Circle(radius=radius, color=color).move_to(position)
     text = Text(label, font=DEFAULT_FONT, font_size=24).move_to(position)
+    text.set_color(WHITE)
     return VGroup(circle, text)
 
 # --- 模板类 ---

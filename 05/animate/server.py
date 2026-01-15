@@ -114,7 +114,7 @@ async def websocket_render(websocket: WebSocket, id: str):
             await websocket.close()
             return
 
-        cmd = ["uv", "run", "manim", "-pql", scene["code_path"], scene["scene_class"]]
+        cmd = ["uv", "run", "manim", "-ql", scene["code_path"], scene["scene_class"]]
         # Force flush to ensure real-time output
         
         await websocket.send_text(f"Executing: {' '.join(cmd)}\n\n")
