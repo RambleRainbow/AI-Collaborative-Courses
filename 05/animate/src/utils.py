@@ -67,7 +67,7 @@ def create_title(text_content):
     """创建标题文本"""
     return create_text(text_content, font_size=60).to_edge(UP)
 
-def create_concept_node(label, position=ORIGIN, color=BLUE_E, radius=0.6):
+def create_concept_node(label, position=ORIGIN, color=BLUE, radius=0.6):
     """创建概念节点 (圆圈+文字)"""
     circle = Circle(radius=radius, color=color).move_to(position)
     text = Text(label, font=DEFAULT_FONT, font_size=24).move_to(position)

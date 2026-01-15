@@ -42,9 +42,6 @@ class Act1Scene3(BaseScene):
         target_x = text_p.get_center()[0]
         concept_group.set_x(target_x)
         
-        # 确保标签为白色 (Defensive programming)
-        line_label.set_color(WHITE)
-        
         # 5. 文字溶解，概念浮现
         self.play(
             FadeOut(text_p),

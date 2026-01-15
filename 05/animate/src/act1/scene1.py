@@ -20,12 +20,7 @@ class Act1Scene1(BaseScene):
         self.play(Write(text), run_time=2)
         self.wait(2)
         
-        # 确保状态为实心文字
-        text.set_fill(opacity=1)
-        text.set_stroke(width=0)
-        text.set_color(WHITE) # 强制设置颜色，防止 Write 动画导致颜色丢失
-        
-        self.wait(6)
+        self.wait(2)
         
         # 3. 保存状态 (保存整组 Cast)
         self.save_state("act1_scene1")
