@@ -20,8 +20,8 @@ def action(scene, cast):
     scene.play(Write(q_mark))
     
     # 4. 提问
-    q1 = Text("雨从哪里来？", font="PingFang SC", font_size=32).next_to(static_group, DOWN, buff=0.5)
-    q2 = Text("水去哪里了？", font="PingFang SC", font_size=32).next_to(q1, DOWN)
+    q1 = Text("雨从哪里来？", font="PingFang SC", font_size=28).next_to(static_group, DOWN, buff=0.3)
+    q2 = Text("水去哪里了？", font="PingFang SC", font_size=28).next_to(q1, RIGHT, buff=0.5)
     
     scene.play(FadeIn(q1), FadeIn(q2))
     scene.wait(2)
