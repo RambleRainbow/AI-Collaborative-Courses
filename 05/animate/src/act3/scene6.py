@@ -2,9 +2,9 @@ from manim import *
 from src.utils import *
 
 def action(scene, cast):
-    # Cleanup
+    # Cleanup Act 3 Scene 5 elements
     scene.play(
-        FadeOut(cast["sqs_16"]), 
+        FadeOut(cast["units_16"]), 
         FadeOut(cast["frame_16"]), 
         FadeOut(cast["filter_lbl"])
     )

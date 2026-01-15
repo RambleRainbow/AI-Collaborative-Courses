@@ -1,5 +1,6 @@
 from manim import *
 from src.utils import *
+import random
 
 def get_act3_cast():
     cast = {}
@@ -37,10 +38,10 @@ def get_act3_cast():
     sqs_4 = VGroup(*[Square(side_length=sq_size).set_stroke(WHITE) for _ in range(4)])
     sqs_4.arrange_in_grid(2, 2, buff=0.2)
     
-    # Letters centered in squares: A(0), B(1), D(2), C(3)
+    # Letters centered in squares: 0=A (TL), 1=B (TR), 2=C (BL), 3=D (BR)
     lbls_4 = VGroup(*[
         Text(l, font=DEFAULT_FONT, font_size=48).move_to(s.get_center()) 
-        for l, s in zip(["A", "B", "D", "C"], sqs_4)
+        for l, s in zip(["A", "B", "C", "D"], sqs_4)
     ])
     
     frame_4 = SurroundingRectangle(VGroup(sqs_4, lbls_4), color=GOLD, buff=0.3)
@@ -51,22 +52,47 @@ def get_act3_cast():
     cast["frame_4"] = frame_4
     cast["frame_lbl_4"] = frame_lbl_4
 
-    # --- 3. 16-Square Grid (Scene 4-5) ---
-    sqs_16 = VGroup(*[Square(side_length=1).set_stroke(WHITE) for _ in range(16)])
-    sqs_16.arrange_in_grid(4, 4, buff=0.2).scale(0.8)
+    # --- 3. 16-Unit Nested Matrix (Scene 4-5) ---
+    # 4x4 grid of 2x2 units. Total 8x8 squares.
+    units_16 = VGroup()
+    unit_sq_size = 0.6
     
-    unit_indices = [0, 1, 5, 4]
-    unit_sqs = VGroup(*[sqs_16[i] for i in unit_indices])
-    frame_16 = SurroundingRectangle(unit_sqs, color=GOLD)
-    label_16 = Text("单元识别", font=DEFAULT_FONT, color=GOLD).next_to(frame_16, UP)
+    # We define 16 units, each a VGroup of 4 squares
+    for _ in range(16):
+        unit = VGroup(*[Square(side_length=unit_sq_size).set_stroke(WHITE, width=1.5) for _ in range(4)])
+        unit.arrange_in_grid(2, 2, buff=0.1)
+        units_16.add(unit)
+    
+    units_16.arrange_in_grid(4, 4, buff=0.5).scale(0.9).shift(LEFT*1) # Give space for label
+    
+    # Choose a "target unit" for identification later (e.g., Row 2, Col 2 -> Index 5)
+    target_unit_idx = 5 
+    target_unit = units_16[target_unit_idx]
+    
+    frame_16 = SurroundingRectangle(target_unit, color=GOLD, buff=0.1)
+    label_16 = Text("单元识别", font=DEFAULT_FONT, color=GOLD, font_size=32).next_to(frame_16, UP)
     filter_lbl = Text("过滤噪音", font=DEFAULT_FONT, color=WHITE).to_edge(DOWN)
     
-    cast["sqs_16"] = sqs_16
+    cast["units_16"] = units_16
     cast["frame_16"] = frame_16
     cast["label_16"] = label_16
     cast["filter_lbl"] = filter_lbl
-    cast["unit_indices"] = unit_indices
+    cast["target_unit_idx"] = target_unit_idx
     
+    # Create randomized sequences for all 16 units
+    # Grid sequence for A-B-D-C is [0, 1, 3, 2]
+    correct_seq = [0, 1, 3, 2]
+    unit_sequences = []
+    
+    for i in range(16):
+        if i == target_unit_idx:
+            unit_sequences.append(correct_seq)
+        else:
+            seq = [0, 1, 2, 3]
+            random.shuffle(seq)
+            unit_sequences.append(seq)
+    cast["unit_sequences"] = unit_sequences
+
     # --- 4. Comparison (Scene 6) ---
     comp_left_t = Text("A亮 -> B亮", font=DEFAULT_FONT, color=COLOR_STATIC).shift(LEFT*4)
     comp_left_lbl = Text("静态描述", font=DEFAULT_FONT, font_size=24).next_to(comp_left_t, DOWN)
@@ -93,7 +119,6 @@ def get_act3_cast():
     cast["s7_t3"] = t3
     
     # --- 6. Summary (Scene 8) ---
-    # summary title is dynamic
     summ_lines = VGroup(
         Text("真实世界 = 复杂动态", font=DEFAULT_FONT),
         Text("单元机制 = 可识别的规律", font=DEFAULT_FONT),
