@@ -11,51 +11,70 @@ def ensure_state_dir():
 
 def serialize_mobject(mobject):
     """
-    Extracts essential state from a Mobject / VGroup.
+    Extracts essential state from a Mobject / VGroup using Deep JSON Serialization.
+    Separates Fill and Stroke properties to ensure visual fidelity.
     """
     state = {
         "points": mobject.points.tolist(),
-        "color": mobject.get_color().to_hex(),
-        "stroke_width": mobject.get_stroke_width(),
+        # Visual Style - Orthogonal Properties
+        "fill_color": mobject.get_fill_color().to_hex(),
         "fill_opacity": mobject.get_fill_opacity(),
+        "stroke_color": mobject.get_stroke_color().to_hex(),
+        "stroke_width": mobject.get_stroke_width(),
         "stroke_opacity": mobject.get_stroke_opacity(),
+        # Fallback/Composite
+        "color": mobject.get_color().to_hex(), 
     }
-    # If it has sub-mobjects, we might need recursive handling?
-    # For now, simplistic approach: assuming we only save specific named entities.
-    # If VGroup, we save its center and scale roughly? 
-    # Actually, saving points is enough for geometry, but VGroups often have submobjects.
-    # If we are saving a VGroup that contains letters, saving its points directly might not be enough if it's high level.
-    # A better approach for Manim is to save the transformation matrix or key attributes (center, width, height).
-    # But Manim objects are complex.
-    # Strategy V1: Save Center, Width, Height, Color. And assume the object is re-created standardly then transformed.
     
+    # Geometry (Center, W, H) - critical for layout preservation
     state.update({
         "center": mobject.get_center().tolist(),
         "width": mobject.width,
         "height": mobject.height,
     })
+    
+    # Support for DecimalNumber and ValueTrackers
+    if hasattr(mobject, "get_value"):
+        try:
+            state["number"] = mobject.get_value()
+        except:
+            pass
+
     return state
 
 def apply_state(mobject, state_data):
     """
-    Applies saved state to a Mobject.
-    Does NOT restore shape (points) directly because that's complex.
-    Instead, it matches Position, Scale (via width/height), and Style.
+    Applies saved state using Deep restoration strategy.
     """
+    # 1. Geometry First (Position & Scale)
     if "center" in state_data:
         mobject.move_to(np.array(state_data["center"]))
     
     if "width" in state_data and mobject.width > 0:
         mobject.scale_to_fit_width(state_data["width"])
     
-    if "color" in state_data:
-        mobject.set_color(state_data["color"])
-        
+    # 2. Visual Style - Apply detailed properties if available
+    # Fill
+    if "fill_color" in state_data:
+        mobject.set_fill(color=state_data["fill_color"])
     if "fill_opacity" in state_data:
         mobject.set_fill(opacity=state_data["fill_opacity"])
         
+    # Stroke
+    if "stroke_color" in state_data:
+        mobject.set_stroke(color=state_data["stroke_color"])
+    if "stroke_width" in state_data:
+        mobject.set_stroke(width=state_data["stroke_width"])
     if "stroke_opacity" in state_data:
         mobject.set_stroke(opacity=state_data["stroke_opacity"])
+        
+    # Fallback to generic color if specific props missing (for backward compatibility)
+    if "color" in state_data and "fill_color" not in state_data:
+        mobject.set_color(state_data["color"])
+
+    # 3. Values
+    if "number" in state_data and hasattr(mobject, "set_value"):
+        mobject.set_value(state_data["number"])
 
 def save_scene_state(scene_name, cast_dict):
     """
