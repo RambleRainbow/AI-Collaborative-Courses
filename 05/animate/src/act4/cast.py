@@ -79,15 +79,60 @@ def get_act4_cast():
     
     cast["real_app_text"] = VGroup(rain_p, ground_wet, rain_conclusion).arrange(DOWN, buff=0.5).center()
     
-    # --- 6. Scene 8: Summary ---
-    summary_title = create_title("第四幕总结")
-    summary_lines = VGroup(
-        Text("谬误的本质 = 违反了结构的约束", font=DEFAULT_FONT, font_size=32),
-        Text("静态知识: 告诉你 \"什么是错的\"", font=DEFAULT_FONT, font_size=32, color=GREY),
-        Text("动态系统: 让你理解 \"为什么错\"", font=DEFAULT_FONT, font_size=32, color=GOLD),
-        Text("理解系统才能真正应用知识", font=DEFAULT_FONT, font_size=32, color=BLUE)
-    ).arrange(DOWN, buff=0.6).next_to(summary_title, DOWN, buff=1)
+    # --- 6. Scene 8: Three Syllogisms Demo (Multiple Inferences Each) ---
+    # Three parallel machines, each demonstrating multiple valid forms
+    machine_cat = ReasoningMachine().scale(0.55).shift(LEFT * 4.5)
+    machine_dis = ReasoningMachine().scale(0.55).shift(ORIGIN)
+    machine_hyp = ReasoningMachine().scale(0.55).shift(RIGHT * 4.5)
     
-    cast["summary_act4"] = VGroup(summary_title, summary_lines)
+    cast["machine_cat"] = machine_cat
+    cast["machine_dis"] = machine_dis
+    cast["machine_hyp"] = machine_hyp
+    
+    # Labels
+    lbl_cat = Text("定言三段论", font=DEFAULT_FONT, font_size=24, color=BLUE).next_to(machine_cat, UP, buff=0.3)
+    lbl_dis = Text("选言三段论", font=DEFAULT_FONT, font_size=24, color=GREEN).next_to(machine_dis, UP, buff=0.3)
+    lbl_hyp = Text("假言三段论", font=DEFAULT_FONT, font_size=24, color=GOLD).next_to(machine_hyp, UP, buff=0.3)
+    
+    cast["syl_labels"] = VGroup(lbl_cat, lbl_dis, lbl_hyp)
+    
+    # === Categorical Syllogism (定言三段论) - Two Forms ===
+    # Form 1 (Barbara): ∀M→P, S∈M ⊢ S∈P
+    cat1_major = Text("∀x(M(x) → P(x))", font=DEFAULT_FONT, font_size=18)
+    cat1_minor = Text("M(s)", font=DEFAULT_FONT, font_size=18)
+    cat1_conc = Text("P(s)", font=DEFAULT_FONT, font_size=18)
+    cast["cat1"] = (cat1_major, cat1_minor, cat1_conc)
+    
+    # Form 2 (Celarent): ∀M→¬P, S∈M ⊢ S∉P
+    cat2_major = Text("∀x(M(x) → ¬P(x))", font=DEFAULT_FONT, font_size=18)
+    cat2_minor = Text("M(s)", font=DEFAULT_FONT, font_size=18)
+    cat2_conc = Text("¬P(s)", font=DEFAULT_FONT, font_size=18)
+    cast["cat2"] = (cat2_major, cat2_minor, cat2_conc)
+    
+    # === Disjunctive Syllogism (选言三段论) - Two Forms ===
+    # Form 1: P ∨ Q, ¬P ⊢ Q
+    dis1_major = Text("P ∨ Q", font=DEFAULT_FONT, font_size=18)
+    dis1_minor = Text("¬P", font=DEFAULT_FONT, font_size=18)
+    dis1_conc = Text("Q", font=DEFAULT_FONT, font_size=18)
+    cast["dis1"] = (dis1_major, dis1_minor, dis1_conc)
+    
+    # Form 2: P ∨ Q, ¬Q ⊢ P
+    dis2_major = Text("P ∨ Q", font=DEFAULT_FONT, font_size=18)
+    dis2_minor = Text("¬Q", font=DEFAULT_FONT, font_size=18)
+    dis2_conc = Text("P", font=DEFAULT_FONT, font_size=18)
+    cast["dis2"] = (dis2_major, dis2_minor, dis2_conc)
+    
+    # === Hypothetical Syllogism (假言三段论) - Two Forms ===
+    # Form 1 (Modus Ponens): P → Q, P ⊢ Q
+    hyp1_major = Text("P → Q", font=DEFAULT_FONT, font_size=18)
+    hyp1_minor = Text("P", font=DEFAULT_FONT, font_size=18)
+    hyp1_conc = Text("Q", font=DEFAULT_FONT, font_size=18)
+    cast["hyp1"] = (hyp1_major, hyp1_minor, hyp1_conc)
+    
+    # Form 2 (Modus Tollens): P → Q, ¬Q ⊢ ¬P
+    hyp2_major = Text("P → Q", font=DEFAULT_FONT, font_size=18)
+    hyp2_minor = Text("¬Q", font=DEFAULT_FONT, font_size=18)
+    hyp2_conc = Text("¬P", font=DEFAULT_FONT, font_size=18)
+    cast["hyp2"] = (hyp2_major, hyp2_minor, hyp2_conc)
     
     return cast
