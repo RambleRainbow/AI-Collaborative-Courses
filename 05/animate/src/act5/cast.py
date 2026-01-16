@@ -37,14 +37,17 @@ def get_act5_cast():
     cast["real_examples"] = VGroup(med_group, it_group, biz_group)
 
     # --- 3. Scene 3 & 4: Many P -> One Q ---
-    node_q = create_concept_node("Q (结果)", color=GOLD)
+    # Shifted down and scaled to fit within screen bounds
+    node_q = create_concept_node("Q (结果)", DOWN * 0.5, color=GOLD)
     ps = VGroup()
     arrows = VGroup()
+    radius = 2.5  # Reduced from 4 to fit screen
     for i in range(5):
         angle = PI - (i * PI / 4)
-        pos = node_q.get_center() + 4 * np.array([np.cos(angle), np.sin(angle), 0])
+        pos = node_q.get_center() + radius * np.array([np.cos(angle), np.sin(angle), 0])
         p = create_concept_node(f"P{i+1}", pos, color=BLUE)
-        arr = Arrow(p.get_right(), node_q.get_left(), buff=0.1, color=GREY_C)
+        # Arrow points toward center with buff to stop at node edge
+        arr = Arrow(p.get_center(), node_q.get_center(), buff=0.5, color=GREY_C)
         ps.add(p)
         arrows.add(arr)
     
