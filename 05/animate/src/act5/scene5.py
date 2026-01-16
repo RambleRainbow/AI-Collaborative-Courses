@@ -2,7 +2,8 @@ from manim import *
 from src.utils import *
 
 def action(scene, cast):
-    machine = ReasoningMachine().center()
+    # Don't .center() as it overrides the coordinate-based layout
+    machine = ReasoningMachine().shift(DOWN * 0.5)
     scene.play(FadeIn(machine))
     
     label = create_title("机制导向的诊断")

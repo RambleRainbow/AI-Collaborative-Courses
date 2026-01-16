@@ -12,7 +12,6 @@
 
 - `src/`: 源代码目录，按幕 (Act) 和场景 (Scene) 组织。
 - `manim.cfg`: Manim 渲染配置文件。
-- `index.html`: 用于浏览已生成动画的本地页面。
 - `script.md`: 原始脚本文件。
 
 ## 如何运行
