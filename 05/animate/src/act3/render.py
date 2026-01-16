@@ -10,6 +10,10 @@ import src.act3.scene6 as s6
 
 class Act3(BaseScene):
     def construct(self):
+        # Initialize base (debug label)
+        super().construct()
+        self.set_act(3)
+        
         # 0. Initialize Cast
         self.cast = get_act3_cast()
         

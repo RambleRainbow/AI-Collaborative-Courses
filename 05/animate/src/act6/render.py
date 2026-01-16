@@ -7,6 +7,10 @@ import src.act6.scene3 as s3
 
 class Act6(BaseScene):
     def construct(self):
+        # Initialize base (debug label)
+        super().construct()
+        self.set_act(6)
+        
         # 0. Initialize Cast
         self.cast = get_act6_cast()
         

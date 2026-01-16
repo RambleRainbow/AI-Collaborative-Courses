@@ -8,6 +8,10 @@ import src.act1.scene4 as s4
 
 class Act1(BaseScene):
     def construct(self):
+        # Initialize base (debug label)
+        super().construct()
+        self.set_act(1)
+        
         # 0. 初始化唯一可信的 Cast
         self.cast = get_act1_cast()
         

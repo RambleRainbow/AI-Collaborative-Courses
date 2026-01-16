@@ -10,6 +10,10 @@ import src.act2.scene6 as s6
 
 class Act2(BaseScene):
     def construct(self):
+        # Initialize base (debug label)
+        super().construct()
+        self.set_act(2)
+        
         # 0. 初始化唯一可信的 Cast
         self.cast = get_act2_cast()
         
