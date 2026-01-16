@@ -28,10 +28,11 @@ def get_act4_cast():
 
     # --- 2. Scene 3: Ontological Structure ---
     # {Major Premise, Minor Premise, Rule, Conclusion}
-    ont_major = create_concept_node("大前提", UP * 2.5 + LEFT * 1.5, color=GOLD)
-    ont_minor = create_concept_node("小前提", UP * 2.5 + RIGHT * 1.5, color=GOLD)
-    ont_rule = create_concept_node("推理规则", ORIGIN, color=BLUE)
-    ont_conclusion = create_concept_node("结论", DOWN * 2.5, color=GOLD)
+    # Shifted down to leave room for frame + label at top
+    ont_major = create_concept_node("大前提", UP * 1.2 + LEFT * 1.5, color=GOLD)
+    ont_minor = create_concept_node("小前提", UP * 1.2 + RIGHT * 1.5, color=GOLD)
+    ont_rule = create_concept_node("推理规则", DOWN * 0.5, color=BLUE)
+    ont_conclusion = create_concept_node("结论", DOWN * 2.2, color=GOLD)
     
     arrow1 = Arrow(ont_major.get_bottom(), ont_rule.get_top(), buff=0.1)
     arrow2 = Arrow(ont_minor.get_bottom(), ont_rule.get_top(), buff=0.1)

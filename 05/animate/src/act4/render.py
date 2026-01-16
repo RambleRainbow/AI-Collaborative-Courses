@@ -12,6 +12,10 @@ import src.act4.scene8 as s8
 
 class Act4(BaseScene):
     def construct(self):
+        # Initialize base (debug label)
+        super().construct()
+        self.set_act(4)
+        
         # 0. Initialize Cast
         self.cast = get_act4_cast()
         

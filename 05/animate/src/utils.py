@@ -10,27 +10,71 @@ from src.state_manager import *
 # --- 模板类 ---
 
 class BaseScene(Scene):
-    """基础场景类，包含通用设置"""
+    """基础场景类，包含通用设置和调试模式"""
+    
+    # Class-level debug flag
+    DEBUG_MODE = True
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.cast = {}
+        
+        # Debug tracking
+        self._act_num = 0
+        self._scene_num = 0
+        self._play_count = 0
+        self._debug_label = None
 
     def construct(self):
-        # 可以在这里添加所有场景通用的初始化代码
-        pass
+        # Initialize debug label if in debug mode
+        if self.DEBUG_MODE:
+            self._init_debug_label()
+    
+    def _init_debug_label(self):
+        """Initialize the debug label in top-right corner"""
+        self._debug_label = Text(
+            f"A{self._act_num}::S{self._scene_num}::P{self._play_count}",
+            font=DEFAULT_FONT, font_size=18, color=GREY
+        ).to_corner(UR, buff=0.2)
+        self.add(self._debug_label)
+    
+    def _update_debug_label(self):
+        """Update the debug label text"""
+        if self._debug_label is not None:
+            new_text = f"A{self._act_num}::S{self._scene_num}::P{self._play_count}"
+            new_label = Text(new_text, font=DEFAULT_FONT, font_size=18, color=GREY).to_corner(UR, buff=0.2)
+            self._debug_label.become(new_label)
+    
+    def set_act(self, act_num: int):
+        """Set the current act number for debug display"""
+        self._act_num = act_num
+        self._scene_num = 0
+        self._play_count = 0
+        if self.DEBUG_MODE:
+            self._update_debug_label()
+    
+    def next_section(self, name: str = None, **kwargs):
+        """Override to track scene number from section name"""
+        super().next_section(name=name, **kwargs)
+        self._scene_num += 1
+        self._play_count = 0
+        if self.DEBUG_MODE:
+            self._update_debug_label()
+    
+    def play(self, *args, **kwargs):
+        """Override play to track play count and update debug label"""
+        self._play_count += 1
+        if self.DEBUG_MODE:
+            self._update_debug_label()
+        super().play(*args, **kwargs)
 
     def register_cast(self, name, mobject):
-        """
-        Register a mobject as a named actor for state preservation.
-        """
+        """Register a mobject as a named actor for state preservation."""
         self.cast[name] = mobject
         return mobject
 
     def load_state(self, source_scene_name):
-        """
-        Loads state from a previous scene and applies it to registered cast members.
-        Must be called AFTER registering cast members.
-        """
+        """Loads state from a previous scene and applies it to registered cast members."""
         state_data = load_scene_state(source_scene_name)
         if not state_data:
             print(f"Warning: No state found for {source_scene_name}")
@@ -41,9 +85,7 @@ class BaseScene(Scene):
                 apply_state(mobject, state_data[name])
                 
     def save_state(self, current_scene_name):
-        """
-        Saves current state of all registered cast members.
-        """
+        """Saves current state of all registered cast members."""
         save_scene_state(current_scene_name, self.cast)
 
 # 字体配置 (请确保系统安装了支持中文的字体，如黑体、思源黑体等)
