@@ -1,7 +1,6 @@
 from manim import WHITE
 from manim import Indicate
 from manim import *
-from src.state_manager import *
 
 # --- 样式常量 ---
 
@@ -12,8 +11,9 @@ from src.state_manager import *
 class BaseScene(Scene):
     """基础场景类，包含通用设置和调试模式"""
     
-    # Class-level debug flag
-    DEBUG_MODE = True
+    # Class-level debug flag (Default to True, but can be controlled via Env Var)
+    import os
+    DEBUG_MODE = os.environ.get("ANIMATE_DEBUG", "1") == "1"
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -68,25 +68,6 @@ class BaseScene(Scene):
             self._update_debug_label()
         super().play(*args, **kwargs)
 
-    def register_cast(self, name, mobject):
-        """Register a mobject as a named actor for state preservation."""
-        self.cast[name] = mobject
-        return mobject
-
-    def load_state(self, source_scene_name):
-        """Loads state from a previous scene and applies it to registered cast members."""
-        state_data = load_scene_state(source_scene_name)
-        if not state_data:
-            print(f"Warning: No state found for {source_scene_name}")
-            return
-
-        for name, mobject in self.cast.items():
-            if name in state_data:
-                apply_state(mobject, state_data[name])
-                
-    def save_state(self, current_scene_name):
-        """Saves current state of all registered cast members."""
-        save_scene_state(current_scene_name, self.cast)
 
 # 字体配置 (请确保系统安装了支持中文的字体，如黑体、思源黑体等)
 # 如果渲染时中文显示为方框，请修改这里的字体名称
