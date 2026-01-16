@@ -189,8 +189,8 @@ class ReasoningMachine(VGroup):
         ])
         self.gear = VGroup(gear_body, teeth)
         
-        # 3. Layout Arrangement
-        self.box_major.move_to(UP * 2.5)
+        # 3. Layout Arrangement (shifted down to avoid title overlap)
+        self.box_major.move_to(UP * 1.5)
         self.box_minor.next_to(self.box_major, DOWN, buff=0.4)
         self.gear.next_to(self.box_minor, DOWN, buff=0.4)
         self.box_conclusion.next_to(self.gear, DOWN, buff=0.4)
@@ -261,9 +261,23 @@ class ReasoningMachine(VGroup):
 
     def get_clean_anim(self):
         """
-        Returns the animation to clean the machine's contents and resets slot tracking.
+        Returns animations to clean the machine's contents and reset box colors.
+        Explicitly fades out all slot content objects.
         """
-        anim = FadeOut(self.content)
+        anims = [self.box_conclusion.animate.set_stroke(WHITE, opacity=1)]
+        
+        # Explicitly fade out each slot's content
+        for key in ["major", "minor", "conclusion"]:
+            obj = self.slots[key]
+            if obj is not None:
+                anims.append(FadeOut(obj))
+        
+        # Also fade the content group if it has anything
+        if len(self.content) > 0:
+            anims.append(FadeOut(self.content))
+        
+        # Reset state
         self.slots = {"major": None, "minor": None, "conclusion": None}
         self.content.remove(*self.content)
-        return anim
+        
+        return AnimationGroup(*anims)

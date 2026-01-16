@@ -26,5 +26,6 @@ def action(scene, cast):
         
     scene.wait(2)
     
-    # Cleanup
+    # Clean machine state before FadeOut
+    scene.play(machine.get_clean_anim())
     scene.play(FadeOut(machine), FadeOut(old_title))

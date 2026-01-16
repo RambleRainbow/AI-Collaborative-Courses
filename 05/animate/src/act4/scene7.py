@@ -2,7 +2,7 @@ from manim import *
 from src.utils import *
 
 def action(scene, cast):
-    machine = cast["machine"].scale(1).center() # Re-center machine
+    machine = cast["machine"].scale(1).center().shift(UP * 0.5)  # Shift up for bottom message
     scene.play(FadeIn(machine))
     
     # Text objects for this scene
