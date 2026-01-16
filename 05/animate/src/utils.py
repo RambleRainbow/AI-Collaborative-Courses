@@ -1,3 +1,5 @@
+from manim import WHITE
+from manim import Indicate
 from manim import *
 from src.state_manager import *
 
@@ -120,4 +122,106 @@ class LightingUnit(VGroup):
             self.sqs.animate.set_fill(GREY, opacity=0.1).set_stroke(GREY, opacity=0.3)
         ]
 
+class ReasoningMachine(VGroup):
+    """
+    A logical inference machine object.
+    Layout (top to bottom): Major Premise (Box), Minor Premise (Small Box), Gear, Conclusion (Small Box).
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        
+        # 1. Boxes
+        self.box_major = RoundedRectangle(width=5, height=1.5, corner_radius=0.1, color=WHITE)
+        self.box_minor = RoundedRectangle(width=3, height=1.0, corner_radius=0.1, color=WHITE)
+        self.box_conclusion = RoundedRectangle(width=3, height=1.0, corner_radius=0.1, color=WHITE)
+        
+        # 2. Gear Construction
+        radius = 0.5
+        teeth_num = 8
+        gear_body = Circle(radius=radius, color=WHITE, fill_opacity=0.1)
+        teeth = VGroup(*[
+            Rectangle(width=radius/2, height=radius/4, color=WHITE, fill_opacity=1)
+            .shift(UP * radius)
+            .rotate(i * 2 * PI / teeth_num, about_point=ORIGIN)
+            for i in range(teeth_num)
+        ])
+        self.gear = VGroup(gear_body, teeth)
+        
+        # 3. Layout Arrangement
+        self.box_major.move_to(UP * 2.5)
+        self.box_minor.next_to(self.box_major, DOWN, buff=0.4)
+        self.gear.next_to(self.box_minor, DOWN, buff=0.4)
+        self.box_conclusion.next_to(self.gear, DOWN, buff=0.4)
+        
+        self.add(self.box_major, self.box_minor, self.gear, self.box_conclusion)
+        
+        # Track slot content
+        self.slots = {"major": None, "minor": None, "conclusion": None}
+        self.content = VGroup() # For easy global FadeOut in clean()
+        self.add(self.content)
 
+    def get_reasoning_steps(self, major_obj, minor_obj, conclusion_obj, is_correct=True):
+        """
+        Calculates and returns a list of animation 'steps'.
+        Handles FadeOut/FadeIn transitions only for changed content.
+        """
+        steps = []
+        fade_outs = []
+        fade_ins = []
+        
+        new_items = {"major": major_obj, "minor": minor_obj, "conclusion": conclusion_obj}
+        
+        for key in ["major", "minor", "conclusion"]:
+            old = self.slots[key]
+            new = new_items[key]
+            
+            if old is not None and old is not new:
+                # Content changed, need to replace
+                fade_outs.append(FadeOut(old))
+                self.content.remove(old)
+                
+            if new is not None:
+                box = getattr(self, f"box_{key}")
+                new.move_to(box.get_center())
+                if new is not old:
+                    # New content or changed content
+                    fade_ins.append(FadeIn(new, shift=DOWN*0.2 if key != "conclusion" else DOWN*0.3))
+                    if new not in self.content:
+                        self.content.add(new)
+                self.slots[key] = new
+
+        if fade_outs:
+            steps.append(fade_outs)
+        
+        if fade_ins:
+            steps.append(fade_ins)
+        self.box_conclusion.set_stroke(WHITE, opacity=1)
+        
+        # Step 2: Gear Rotates
+        steps.append([
+            Rotate(self.gear, angle=-2*PI, run_time=1.5, rate_func=linear),
+            Indicate(self.box_conclusion, color=WHITE)
+        ])
+        
+        # Step 3: Feedback
+        if is_correct:
+            # fb = Text("正确️", color=GREEN).scale(1.5).move_to(self.box_conclusion.get_center())
+            # steps.append([FadeIn(fb, scale=1.5, run_time=0.3)])
+            steps.append([self.box_conclusion.animate.set_stroke(GREEN, opacity=1)])
+            # steps.append([FadeOut(fb, run_time=0.3)])
+        else:
+            # fb = Text("错误", color=RED).scale(1.5).move_to(self.box_conclusion.get_center())
+            # steps.append([FadeIn(fb, scale=1.5, run_time=0.3)])
+            steps.append([self.box_conclusion.animate.set_stroke(RED, opacity=1)])
+            # steps.append([FadeOut(fb, run_time=0.3)])
+            
+        return steps
+
+    def get_clean_anim(self):
+        """
+        Returns the animation to clean the machine's contents and resets slot tracking.
+        """
+        anim = FadeOut(self.content)
+        self.slots = {"major": None, "minor": None, "conclusion": None}
+        self.content.remove(*self.content)
+        return anim
